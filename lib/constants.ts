@@ -9,8 +9,8 @@ export const SITE = {
   poweredBy:   "Powered by Sharva's IT",
   description:
     "India's most precise Vedic astrology platform — delivering Panchanga, Kundali, Muhurta, Temple Directory, and devotional wisdom across all regional traditions, in your language.",
-  url:         'https://vedrith.com',
-  email:       'hello@vedrith.com',
+  url:         'https://vedrith.sharvasit.in',
+  email:       'vedrithai@gmail.com',
   twitter:     '@vedrith',
 } as const
 
@@ -26,7 +26,7 @@ export const STATS = [
   { value: '9',    label: 'Indian Languages'     },
   { value: '8+',   label: 'Regional Traditions'  },
   { value: '12+',  label: 'Spiritual Modules'    },
-  { value: '100K', label: 'Users at Scale'       },
+  { value: 'V1',   label: 'Foundation Build'    },
 ] as const
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -41,7 +41,7 @@ export interface Feature {
   title:       string
   description: string
   tier:        FeatureTier
-  status:      'live' | 'soon' | 'planned'
+  status:      'soon' | 'planned' | 'future'
 }
 
 export const FEATURES: Feature[] = [
@@ -51,7 +51,7 @@ export const FEATURES: Feature[] = [
     title:       'Panchanga',
     description: 'Daily Tithi, Nakshatra, Yoga, Karana and Vara for any Indian city. Supports 8 regional traditions including Telugu, Tamil, Kannada and Malayalam.',
     tier:        'Free',
-    status:      'live',
+    status:      'soon',
   },
   {
     id:          'kundali',
@@ -59,7 +59,7 @@ export const FEATURES: Feature[] = [
     title:       'Kundali Generation',
     description: 'Complete Vedic birth chart with planetary positions, Lagna, 12 house cusps, Vimshottari Dasha sequence, divisional charts (D9, D10), Yoga and Dosha detection.',
     tier:        'Free',
-    status:      'live',
+    status:      'soon',
   },
   {
     id:          'muhurta',
@@ -67,7 +67,7 @@ export const FEATURES: Feature[] = [
     title:       'Muhurta Engine',
     description: 'AI-scored auspicious timing for marriage, griha pravesha, business launch, travel, and naming ceremonies. Weighted across Tithi, Nakshatra, Yoga and Lagna strength.',
     tier:        'PRO',
-    status:      'live',
+    status:      'soon',
   },
   {
     id:          'temple',
@@ -75,7 +75,7 @@ export const FEATURES: Feature[] = [
     title:       'Temple Directory',
     description: "Geo-search across 1,000+ verified temples. Daily pooja timings, annual festival calendar, deity profiles — all integrated with VedRith's Panchanga engine.",
     tier:        'Free',
-    status:      'live',
+    status:      'soon',
   },
   {
     id:          'devotional',
@@ -83,7 +83,7 @@ export const FEATURES: Feature[] = [
     title:       'Devotional Content',
     description: 'Curated library of stotras, mantras, and vratas in original Sanskrit with transliteration and translation. Daily devotion plan personalised to your Panchanga.',
     tier:        'Free',
-    status:      'live',
+    status:      'soon',
   },
   {
     id:          'family',
@@ -91,7 +91,7 @@ export const FEATURES: Feature[] = [
     title:       'Family Dashboard',
     description: "Manage your entire family's spiritual calendar in one place. Birth charts for all members, tithi-based anniversaries, upcoming ceremonies, and Pitru Paksha reminders.",
     tier:        'Free',
-    status:      'live',
+    status:      'soon',
   },
   {
     id:          'knowledge',
@@ -99,7 +99,7 @@ export const FEATURES: Feature[] = [
     title:       'Knowledge Base',
     description: 'Every Nakshatra, Tithi, Yoga, and Dosha explains itself. Tap any result to see its classical meaning, deity, suitable activities, remedies, and mantra.',
     tier:        'Free',
-    status:      'live',
+    status:      'soon',
   },
   {
     id:          'matchmaking',
