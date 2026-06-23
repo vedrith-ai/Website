@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import SectionHeader from '@/components/ui/SectionHeader'
 import { FEATURES, type Feature, type FeatureTier } from '@/lib/constants'
 
@@ -128,10 +129,23 @@ export default function FeaturesSection() {
 
         {/* Features grid — 3×3 desktop, 2×5 tablet, 1 mobile */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {FEATURES.map((feature) => (
-            <FeatureCard key={feature.id} feature={feature} />
-          ))}
-        </div>
+  {FEATURES.map((feature) =>
+    feature.id === 'panchanga' ? (
+      <Link
+        key={feature.id}
+        href="/panchanga"
+        className="block"
+      >
+        <FeatureCard feature={feature} />
+      </Link>
+    ) : (
+      <FeatureCard
+        key={feature.id}
+        feature={feature}
+      />
+    )
+  )}
+</div>
 
         {/* Bottom note */}
         <p className="font-sans text-[0.7rem] tracking-[0.15em] uppercase text-cream-100/25 text-center mt-14">
