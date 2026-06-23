@@ -63,7 +63,7 @@ export default function PanchangaPage() {
     <Header />
 
       {/* ── Page header ─────────────────────────────────────────────────── */}
-      <div className="border-b border-white/[0.06] py-10 px-4">
+     <div className="border-b border-white/[0.06] pt-20 pb-10 px-4">
         <div className="max-w-7xl mx-auto">
           <p className="font-sans text-[0.6rem] tracking-[0.3em] uppercase text-gold-500 mb-3">
             Pañcāṅga Engine V1.1
