@@ -16,7 +16,7 @@ const STATUS_LABEL: Record<Feature['status'], string> = {
   soon:    'Coming V1',
   planned: 'Coming V2',
   future:  'Future',
-  LIVE: 'Click to Open',
+  LIVE: 'Click-to-Open',
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -133,7 +133,7 @@ export default function FeaturesSection() {
   {FEATURES.map((feature) =>
     feature.id === 'panchanga' ? (
       <Link
-        key={feature.id}
+        key={LIVE.id}
         href="/panchanga"
         className="block"
       >
