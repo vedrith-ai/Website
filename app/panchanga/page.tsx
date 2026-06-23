@@ -7,6 +7,8 @@ import PanchangaForm               from '@/components/panchanga/PanchangaForm'
 import PanchangaResult             from '@/components/panchanga/PanchangaResult'
 import type { PanchangaResult as TPanchangaResult, ApiResponse } from '@/lib/types/panchanga'
 import type { PanchangaFormValues }  from '@/components/panchanga/PanchangaForm'
+import Footer from '@/components/layout/Footer'
+import Header from '@/components/layout/Header'
 
 export default function PanchangaPage() {
   const [result,  setResult]  = useState<TPanchangaResult | null>(null)
@@ -58,34 +60,7 @@ export default function PanchangaPage() {
     <div className="min-h-screen bg-navy-950">
 
       {/* ── Top navigation ──────────────────────────────────────────────── */}
-      <nav className="sticky top-0 z-40 bg-navy-950/95 backdrop-blur border-b border-white/[0.06]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex-shrink-0" aria-label="VedRith Home">
-            <Image
-              src="/images/logo-horizontal.png"
-              alt="VedRith"
-              width={180}
-              height={45}
-              className="h-10 w-auto"
-              priority
-            />
-          </Link>
-
-          <div className="flex items-center gap-4">
-            <span className="hidden sm:inline-flex items-center gap-1.5 font-sans text-[0.6rem] tracking-[0.2em] uppercase text-amber-400/80 bg-amber-400/8 border border-amber-400/20 px-3 py-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-              Under Development
-            </span>
-            <Link
-              href="/#contact"
-              className="font-sans text-[0.65rem] tracking-[0.18em] uppercase text-gold-400
-                         hover:text-gold-300 transition-colors"
-            >
-              Join Waitlist
-            </Link>
-          </div>
-        </div>
-      </nav>
+    <Header />
 
       {/* ── Page header ─────────────────────────────────────────────────── */}
       <div className="border-b border-white/[0.06] py-10 px-4">
@@ -198,6 +173,7 @@ export default function PanchangaPage() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }
