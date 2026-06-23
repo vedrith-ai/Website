@@ -72,7 +72,9 @@ function FeatureCard({ feature }: { feature: Feature }) {
           font-sans text-[0.6rem] tracking-[0.15em] uppercase
           ${feature.status === 'soon' ? 'text-gold-500/80' : 'text-cream-100/30'}
         `}>
-          {STATUS_LABEL[feature.status]}
+          {feature.id === 'panchanga'
+  ? 'Live'
+  : STATUS_LABEL[feature.status]}
         </span>
       </div>
 
