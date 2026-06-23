@@ -4,7 +4,7 @@ import OrnamentDivider from '@/components/ui/OrnamentDivider'
 import { SITE, NAV_LINKS, SUPPORTED_LANGUAGES } from '@/lib/constants'
 
 const FEATURE_LINKS = [
-  { label: 'Panchanga',        href: '#features' },
+  { label: 'Panchanga',        href: '/panchanga' },
   { label: 'Kundali',          href: '#features' },
   { label: 'Muhurta',          href: '#features' },
   { label: 'Temple Directory', href: '#features' },
@@ -125,11 +125,17 @@ export default function Footer() {
             &copy; {year} {SITE.name}. All rights reserved.
           </p>
 
-          {/* Powered by Sharva's IT */}
-          <p className="font-sans text-[0.7rem] text-cream-100/35 tracking-[0.15em] uppercase">
-            {SITE.poweredBy}
-          </p>
-
+{/* Powered by Sharva's IT */}
+<Link
+  href="https://sharvasit.in"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="inline-block"
+>
+  <p className="font-sans text-[0.7rem] text-cream-100/35 tracking-[0.15em] uppercase hover:text-cream-100/60 transition-colors">
+    {SITE.poweredBy}
+  </p>
+</Link>
           {/* Legal links placeholder */}
           <div className="flex gap-6">
             <span className="font-sans text-[0.7rem] text-cream-100/25 cursor-default">
