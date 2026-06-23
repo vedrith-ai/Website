@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// VedRith — Panchanga Engine Types
+// VedRith — Panchanga Engine Types  (V1.1 — additive extensions marked below)
 // All types shared across the Panchanga calculation pipeline
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -19,6 +19,16 @@ export type AyanamshaKey = 'LAHIRI' | 'KP' | 'RAMAN' | 'TRUE_CHITRA'
 
 // ── Paksha (lunar fortnight) ──────────────────────────────────────────────────
 export type Paksha = 'SHUKLA' | 'KRISHNA'
+
+// ── [V1.1] Lunar calendar system ─────────────────────────────────────────────
+/** Amanta: month ends at Amavasya (South Indian / Kannada tradition).
+ *  Purnimanta: month ends at Purnima (North Indian tradition). */
+export type CalendarSystem = 'AMANTA' | 'PURNIMANTA'
+
+// ── [V1.1] Display language ───────────────────────────────────────────────────
+/** Languages supported for display-name localisation.
+ *  Extensible: add 'te'|'ta'|'ml'|'sa' in a future release. */
+export type LanguageCode = 'en' | 'kn'
 
 // ── Time range ────────────────────────────────────────────────────────────────
 export interface TimeRange {
@@ -41,6 +51,8 @@ export interface TithiResult {
   endLocal:   string          // Formatted end time
   completed:  number          // % elapsed, 0–100
   quality:    'SHUBHA' | 'ASHUBHA' | 'MIXED'
+  /** [V1.1] Display name in the requested language */
+  displayName?: string
 }
 
 // ── Nakshatra ─────────────────────────────────────────────────────────────────
@@ -54,6 +66,8 @@ export interface NakshatraResult {
   deity:     string           // Ruling deity
   ruler:     string           // Ruling planet
   quality:   'SHUBHA' | 'ASHUBHA' | 'MIXED'
+  /** [V1.1] Display name in the requested language */
+  displayName?: string
 }
 
 // ── Yoga ──────────────────────────────────────────────────────────────────────
@@ -63,6 +77,8 @@ export interface YogaResult {
   endTime:   Date
   endLocal:  string
   quality:   'SHUBHA' | 'ASHUBHA' | 'MIXED'
+  /** [V1.1] Display name in the requested language */
+  displayName?: string
 }
 
 // ── Karana ────────────────────────────────────────────────────────────────────
@@ -73,6 +89,8 @@ export interface KaranaResult {
   endTime:  Date
   endLocal: string
   quality:  'SHUBHA' | 'ASHUBHA' | 'MIXED'
+  /** [V1.1] Display name in the requested language */
+  displayName?: string
 }
 
 // ── Vara (weekday) ────────────────────────────────────────────────────────────
@@ -81,7 +99,35 @@ export interface VaraResult {
   name:     string            // e.g. "Sunday"
   nameLocal: string           // Regional weekday name
   ruler:    string            // Ruling planet
-  quality:  'SHUBHA' | 'ASHUBHA'
+  quality:  'SHUBHA' | 'ASHUBHA' | 'MIXED'
+  /** [V1.1] Display name in the requested language */
+  displayName?: string
+}
+
+// ── [V1.1] Masa (Chandramana lunar month) ────────────────────────────────────
+export interface MasaInfo {
+  /** 0=Chaitra … 11=Phalguna */
+  index: number
+  name:  string
+  displayName: string         // in the requested language
+}
+
+export interface MasaResult {
+  amanta:         MasaInfo
+  purnimanta:     MasaInfo
+  calendarSystem: CalendarSystem
+  /** The masa matching the user's chosen calendarSystem */
+  current:        MasaInfo
+}
+
+// ── [V1.1] Samvatsara (60-year cycle) ────────────────────────────────────────
+export interface SamvatsaraResult {
+  /** 1-based position in the 60-year cycle (1=Prabhava … 60=Akshaya) */
+  index:      number
+  name:       string
+  displayName: string         // in the requested language
+  shakaYear:  number
+  vikramYear: number
 }
 
 // ── Panchanga query input ─────────────────────────────────────────────────────
@@ -93,6 +139,10 @@ export interface PanchangaQuery {
   region:     RegionKey
   ayanamsha?: AyanamshaKey    // Default: LAHIRI
   locationName?: string       // Display label for the location
+  /** [V1.1] Display language. Default: 'en' */
+  lang?:           LanguageCode
+  /** [V1.1] Lunar calendar system. Default: 'AMANTA' */
+  calendarSystem?: CalendarSystem
 }
 
 // ── Complete Panchanga result ─────────────────────────────────────────────────
@@ -122,11 +172,19 @@ export interface PanchangaResult {
   moonsetLocal:  string | null
 
   // Five limbs
-  tithi:    TithiResult
+  tithi:     TithiResult
   nakshatra: NakshatraResult
-  yoga:     YogaResult
-  karana:   KaranaResult
-  vara:     VaraResult
+  yoga:      YogaResult
+  karana:    KaranaResult
+  vara:      VaraResult
+
+  // [V1.1] Traditional calendar context
+  masa:        MasaResult
+  samvatsara:  SamvatsaraResult
+
+  // [V1.1] Active language and calendar system
+  lang:           LanguageCode
+  calendarSystem: CalendarSystem
 
   // Inauspicious periods
   rahuKalam:   TimeRange
@@ -171,3 +229,4 @@ export interface ApiError {
 }
 
 export type ApiResponse<T> = ApiSuccess<T> | ApiError
+

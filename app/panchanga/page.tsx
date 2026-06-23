@@ -27,6 +27,8 @@ export default function PanchangaPage() {
         region:       values.region,
         ayanamsha:    values.ayanamsha,
         locationName: values.locationName,
+        lang:           values.lang,            // [V1.1]
+        calendarSystem: values.calendarSystem,   // [V1.1]
       })
 
       const res  = await fetch(`/api/v1/panchanga/daily?${params.toString()}`)
@@ -89,14 +91,15 @@ export default function PanchangaPage() {
       <div className="border-b border-white/[0.06] py-10 px-4">
         <div className="max-w-7xl mx-auto">
           <p className="font-sans text-[0.6rem] tracking-[0.3em] uppercase text-gold-500 mb-3">
-            Pañcāṅga Engine V1
+            Pañcāṅga Engine V1.1
           </p>
           <h1 className="font-serif text-3xl md:text-4xl font-light text-cream-100 mb-2 leading-tight">
-            Daily Panchanga Calculator
+            Traditional Kannada Panchanga Calculator
           </h1>
           <p className="font-sans text-sm text-cream-100/50 max-w-xl">
             Astronomical-grade Panchanga for any date, city, and regional tradition.
-            All five limbs — Tithi, Nakshatra, Yoga, Karana, Vara — with Rahu Kalam and Abhijit Muhurta.
+            All five limbs, Paksha, Chandramana Masa, Samvatsara, Rahu Kalam, and Abhijit Muhurta —
+            in English and Kannada.
           </p>
         </div>
       </div>

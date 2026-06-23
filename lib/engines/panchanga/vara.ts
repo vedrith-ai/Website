@@ -9,12 +9,12 @@ import type { VaraResult } from '../../types/panchanga'
 interface VaraData {
   name:      string   // English name
   ruler:     string   // Ruling planet
-  quality:   'SHUBHA' | 'ASHUBHA'
+  quality:   'SHUBHA' | 'ASHUBHA' | 'MIXED'
 }
 
 // Index: 0=Sunday, 1=Monday, ..., 6=Saturday
 const VARA_DATA: VaraData[] = [
-  { name: 'Sunday',    ruler: 'Sun',     quality: 'MIXED'   as 'SHUBHA' | 'ASHUBHA' },
+  { name: 'Sunday',    ruler: 'Sun',     quality: 'MIXED'   },
   { name: 'Monday',    ruler: 'Moon',    quality: 'SHUBHA'  },
   { name: 'Tuesday',   ruler: 'Mars',    quality: 'ASHUBHA' },
   { name: 'Wednesday', ruler: 'Mercury', quality: 'SHUBHA'  },

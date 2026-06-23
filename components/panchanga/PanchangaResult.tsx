@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import type { PanchangaResult } from '@/lib/types/panchanga'
 
 interface Props {
@@ -65,6 +66,8 @@ function LimbCard({
   label,
   name,
   nameLocal,
+  displayName,   // [V1.1]
+  isKannada,     // [V1.1]
   sub,
   endLocal,
   quality,
@@ -73,18 +76,28 @@ function LimbCard({
   label:      string
   name:       string
   nameLocal?: string
+  displayName?: string   // [V1.1] EN/KN localized name from knowledge base
+  isKannada?: boolean    // [V1.1] true when result.lang === 'kn' — applies Kannada font
   sub?:       string
   endLocal:   string
   quality:    'SHUBHA' | 'ASHUBHA' | 'MIXED'
-  extra?:     React.ReactNode
+  extra?:     ReactNode
 }) {
   const showLocal = nameLocal && nameLocal !== name
+  // [V1.1] Only show displayName separately if it differs from both name and nameLocal
+  // (avoids redundant display when lang='en', since displayName would equal name)
+  const showDisplayName = displayName && displayName !== name && displayName !== nameLocal
   return (
     <div className="relative bg-navy-800/50 border border-white/[0.07] p-5 hover:border-gold-500/30 transition-colors">
       <p className="font-sans text-[0.6rem] tracking-[0.22em] uppercase text-gold-500/70 mb-2">{label}</p>
       <p className="font-serif text-2xl font-light text-cream-100 mb-0.5 leading-snug">{name}</p>
       {showLocal && (
         <p className="font-sans text-xs text-gold-400/70 mb-1">{nameLocal}</p>
+      )}
+      {showDisplayName && (
+        <p className={`font-sans text-sm text-cream-100/80 mb-1 ${isKannada ? 'font-kannada' : ''}`}>
+          {displayName}
+        </p>
       )}
       {sub && <p className="font-sans text-xs text-cream-100/50 mb-2">{sub}</p>}
       {extra}
@@ -104,9 +117,12 @@ export default function PanchangaResult({ result }: Props) {
     date, location, region, ayanamsha, ayanamshaValue,
     sunriseLocal, sunsetLocal, moonriseLocal, moonsetLocal,
     tithi, nakshatra, yoga, karana, vara,
+    masa, samvatsara, lang,                         // [V1.1]
     rahuKalam, gulikaKalam, yamaganda, abhijitMuhurta,
     julianDay,
   } = result
+
+  const isKannada = lang === 'kn'   // [V1.1]
 
   const displayDate = new Date(date + 'T12:00:00').toLocaleDateString('en-IN', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
@@ -154,6 +170,8 @@ export default function PanchangaResult({ result }: Props) {
             label="Tithi"
             name={tithi.name}
             nameLocal={tithi.nameLocal}
+            displayName={tithi.displayName}
+            isKannada={isKannada}
             sub={`${tithi.pakshaName} Paksha · ${tithi.completed}% elapsed`}
             endLocal={tithi.endLocal}
             quality={tithi.quality}
@@ -170,6 +188,8 @@ export default function PanchangaResult({ result }: Props) {
             label="Nakshatra"
             name={nakshatra.name}
             nameLocal={nakshatra.nameLocal}
+            displayName={nakshatra.displayName}
+            isKannada={isKannada}
             sub={`Pada ${nakshatra.pada} · Lord: ${nakshatra.ruler}`}
             endLocal={nakshatra.endLocal}
             quality={nakshatra.quality}
@@ -184,6 +204,8 @@ export default function PanchangaResult({ result }: Props) {
           <LimbCard
             label="Yoga"
             name={yoga.name}
+            displayName={yoga.displayName}
+            isKannada={isKannada}
             endLocal={yoga.endLocal}
             quality={yoga.quality}
           />
@@ -192,6 +214,8 @@ export default function PanchangaResult({ result }: Props) {
           <LimbCard
             label="Karana"
             name={karana.name}
+            displayName={karana.displayName}
+            isKannada={isKannada}
             sub={karana.isFixed ? 'Sthira (Fixed)' : 'Chara (Movable)'}
             endLocal={karana.endLocal}
             quality={karana.quality}
@@ -204,10 +228,75 @@ export default function PanchangaResult({ result }: Props) {
             {vara.nameLocal !== vara.name && (
               <p className="font-sans text-xs text-gold-400/70 mb-1">{vara.nameLocal}</p>
             )}
+            {vara.displayName && vara.displayName !== vara.name && vara.displayName !== vara.nameLocal && (
+              <p className={`font-sans text-sm text-cream-100/80 mb-1 ${isKannada ? 'font-kannada' : ''}`}>
+                {vara.displayName}
+              </p>
+            )}
             <p className="font-sans text-xs text-cream-100/50">Lord: {vara.ruler}</p>
             <div className="mt-3 pt-3 border-t border-white/[0.06] flex justify-end">
               <QualityBadge quality={vara.quality} />
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── [V1.1] Traditional Calendar Context — Paksha / Masa / Samvatsara ── */}
+      <div>
+        <p className="font-sans text-[0.6rem] tracking-[0.28em] uppercase text-gold-500/60 mb-4">
+          Traditional Calendar — Paksha · Masa · Samvatsara
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+
+          {/* Paksha */}
+          <div className="bg-navy-800/50 border border-white/[0.07] p-5">
+            <p className="font-sans text-[0.6rem] tracking-[0.22em] uppercase text-gold-500/70 mb-2">Paksha</p>
+            <p className="font-serif text-2xl font-light text-cream-100 mb-0.5 leading-snug">
+              {tithi.pakshaName} Paksha
+            </p>
+            <p className="font-sans text-xs text-cream-100/50 mt-2">
+              {tithi.paksha === 'SHUKLA' ? 'Waxing fortnight (New Moon → Full Moon)' : 'Waning fortnight (Full Moon → New Moon)'}
+            </p>
+          </div>
+
+          {/* Masa */}
+          <div className="bg-navy-800/50 border border-white/[0.07] p-5">
+            <p className="font-sans text-[0.6rem] tracking-[0.22em] uppercase text-gold-500/70 mb-2">
+              Masa ({masa.calendarSystem === 'AMANTA' ? 'Amanta' : 'Purnimanta'})
+            </p>
+            <p className="font-serif text-2xl font-light text-cream-100 mb-0.5 leading-snug">
+              {masa.current.name}
+            </p>
+            {masa.current.displayName !== masa.current.name && (
+              <p className={`font-sans text-sm text-cream-100/80 mb-1 ${isKannada ? 'font-kannada' : ''}`}>
+                {masa.current.displayName}
+              </p>
+            )}
+            {masa.amanta.index !== masa.purnimanta.index && (
+              <p className="font-sans text-xs text-cream-100/40 mt-2">
+                {masa.calendarSystem === 'AMANTA'
+                  ? `Purnimanta equivalent: ${masa.purnimanta.name}`
+                  : `Amanta equivalent: ${masa.amanta.name}`}
+              </p>
+            )}
+          </div>
+
+          {/* Samvatsara */}
+          <div className="bg-navy-800/50 border border-white/[0.07] p-5">
+            <p className="font-sans text-[0.6rem] tracking-[0.22em] uppercase text-gold-500/70 mb-2">
+              Samvatsara
+            </p>
+            <p className="font-serif text-2xl font-light text-cream-100 mb-0.5 leading-snug">
+              {samvatsara.name}
+            </p>
+            {samvatsara.displayName !== samvatsara.name && (
+              <p className={`font-sans text-sm text-cream-100/80 mb-1 ${isKannada ? 'font-kannada' : ''}`}>
+                {samvatsara.displayName}
+              </p>
+            )}
+            <p className="font-sans text-xs text-cream-100/50 mt-2">
+              Shaka {samvatsara.shakaYear} · Vikram {samvatsara.vikramYear}
+            </p>
           </div>
         </div>
       </div>

@@ -10,10 +10,11 @@ const TIER_STYLES: Record<FeatureTier, string> = {
   Premium: 'bg-gold-500/10 text-gold-300 border border-gold-400/25',
 }
 
+// All keys must exactly match Feature['status'] = 'soon' | 'planned' | 'future'
 const STATUS_LABEL: Record<Feature['status'], string> = {
-  live:    '',
-  soon:    'Coming V2',
-  planned: 'Coming V2.5',
+  soon:    'Coming V1',
+  planned: 'Coming V2',
+  future:  'Future',
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -45,11 +46,12 @@ function FeatureIcon({ path }: { path: string }) {
 // Individual feature card
 // ─────────────────────────────────────────────────────────────────────────────
 function FeatureCard({ feature }: { feature: Feature }) {
-  const isDimmed = feature.status !== 'live'
+  // Dim only far-future planned features
+  const isDimmed = feature.status === 'planned' || feature.status === 'future'
 
   return (
     <article
-      className={`feature-card p-7 rounded-sm ${isDimmed ? 'opacity-75' : ''}`}
+      className={`feature-card p-7 rounded-sm ${isDimmed ? 'opacity-70' : ''}`}
     >
       {/* Icon */}
       <FeatureIcon path={feature.iconPath} />
@@ -64,11 +66,12 @@ function FeatureCard({ feature }: { feature: Feature }) {
         >
           {feature.tier}
         </span>
-        {feature.status !== 'live' && (
-          <span className="font-sans text-[0.6rem] tracking-[0.15em] uppercase text-cream-100/35">
-            {STATUS_LABEL[feature.status]}
-          </span>
-        )}
+        <span className={`
+          font-sans text-[0.6rem] tracking-[0.15em] uppercase
+          ${feature.status === 'soon' ? 'text-gold-500/80' : 'text-cream-100/30'}
+        `}>
+          {STATUS_LABEL[feature.status]}
+        </span>
       </div>
 
       {/* Title */}

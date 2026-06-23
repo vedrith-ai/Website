@@ -343,3 +343,13 @@ body {
   line-height: 1.75;
   color: rgba(27, 42, 74, 0.75);
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   [V1.1] Kannada Script Utility
+   Apply to any element displaying Kannada text (ಪಾಡ್ಯ, ಅಶ್ವಿನಿ, etc.) so it
+   renders with Noto Sans Kannada rather than falling back to a generic
+   system font that may lack full Kannada glyph coverage.
+   ───────────────────────────────────────────────────────────────────────────── */
+.font-kannada {
+  font-family: var(--font-kannada), 'Noto Sans Kannada', sans-serif;
+}

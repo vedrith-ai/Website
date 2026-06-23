@@ -16,19 +16,22 @@ import type { ApiResponse, PanchangaResult } from '@/lib/types/panchanga'
 // ─────────────────────────────────────────────────────────────────────────────
 // In-memory cache stub
 // Replace with Vercel KV (Redis) in production as per Architecture §7 / §13
-// Cache key: `panchanga:{date}:{region}:{latBucket}:{lngBucket}:{ayanamsha}`
+// Cache key: `panchanga:{date}:{region}:{latBucket}:{lngBucket}:{ayanamsha}:{lang}:{calendarSystem}`
+// [V1.1] lang/calendarSystem added to the key — they affect displayName/masa
+// output, so two requests differing only in these fields must NOT collide.
 // ─────────────────────────────────────────────────────────────────────────────
 const CACHE = new Map<string, { result: PanchangaResult; expiresAt: number }>()
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000   // 24 hours
 
 function getCacheKey(
   date: string, region: string,
-  lat: number, lng: number, ayanamsha: string
+  lat: number, lng: number, ayanamsha: string,
+  lang: string, calendarSystem: string   // [V1.1]
 ): string {
   // Bucket lat/lng to 0.5° for shared cache (Panchanga varies by area, not exact point)
   const latBucket = Math.round(lat  * 2) / 2
   const lngBucket = Math.round(lng  * 2) / 2
-  return `panchanga:${date}:${region}:${latBucket}:${lngBucket}:${ayanamsha}`
+  return `panchanga:${date}:${region}:${latBucket}:${lngBucket}:${ayanamsha}:${lang}:${calendarSystem}`
 }
 
 function generateRequestId(): string {
@@ -68,7 +71,8 @@ export async function GET(request: NextRequest) {
 
     // ── 3. Check cache ─────────────────────────────────────────────────────
     const cacheKey = getCacheKey(
-      query.date, query.region, query.lat, query.lng, query.ayanamsha
+      query.date, query.region, query.lat, query.lng, query.ayanamsha,
+      query.lang, query.calendarSystem   // [V1.1]
     )
     const cached = CACHE.get(cacheKey)
     if (cached && cached.expiresAt > Date.now()) {

@@ -6,6 +6,12 @@ export type RegionKey =
   | 'KANNADA' | 'TELUGU' | 'TAMIL' | 'MALAYALAM'
   | 'GUJARATI' | 'MAHARASHTRIAN' | 'BENGALI' | 'NORTH_INDIAN'
 
+/** [V1.1] Display language — English or Kannada */
+export type LangCode = 'en' | 'kn'
+
+/** [V1.1] Lunar calendar system */
+export type CalendarSystemType = 'AMANTA' | 'PURNIMANTA'
+
 export interface PanchangaFormValues {
   date:         string
   lat:          number
@@ -14,6 +20,8 @@ export interface PanchangaFormValues {
   locationName: string
   region:       RegionKey
   ayanamsha:    'LAHIRI' | 'KP' | 'RAMAN' | 'TRUE_CHITRA'
+  lang:           LangCode             // [V1.1]
+  calendarSystem: CalendarSystemType   // [V1.1]
 }
 
 interface Props {
@@ -39,6 +47,18 @@ const AYANAMSHAS = [
   { value: 'TRUE_CHITRA', label: 'True Chitrapaksha'       },
 ]
 
+/** [V1.1] Display language options */
+const LANGUAGES: { value: LangCode; label: string }[] = [
+  { value: 'en', label: 'English' },
+  { value: 'kn', label: 'ಕನ್ನಡ (Kannada)' },
+]
+
+/** [V1.1] Lunar calendar system options */
+const CALENDAR_SYSTEMS: { value: CalendarSystemType; label: string; hint: string }[] = [
+  { value: 'AMANTA',     label: 'Amanta',     hint: 'South Indian — month ends at Amavasya' },
+  { value: 'PURNIMANTA', label: 'Purnimanta', hint: 'North Indian — month ends at Purnima'   },
+]
+
 /** Top Indian cities as quick-select presets */
 const PRESET_CITIES = [
   { name: 'Bangalore',  lat: 12.9716, lng: 77.5946, tz: 'Asia/Kolkata' },
@@ -61,8 +81,10 @@ export default function PanchangaForm({ onSubmit, loading }: Props) {
   const [lng,        setLng]        = useState<string>('')
   const [timezone,   setTimezone]   = useState('Asia/Kolkata')
   const [locName,    setLocName]    = useState('')
-  const [region,     setRegion]     = useState<RegionKey>('NORTH_INDIAN')
+  const [region,     setRegion]     = useState<RegionKey>('KANNADA')
   const [ayanamsha,  setAyanamsha]  = useState<'LAHIRI'|'KP'|'RAMAN'|'TRUE_CHITRA'>('LAHIRI')
+  const [lang,           setLang]           = useState<LangCode>('en')               // [V1.1]
+  const [calendarSystem, setCalendarSystem] = useState<CalendarSystemType>('AMANTA') // [V1.1]
   const [locError,   setLocError]   = useState('')
   const [searching,  setSearching]  = useState(false)
   const [locationQuery, setLocationQuery] = useState('')
@@ -141,8 +163,11 @@ export default function PanchangaForm({ onSubmit, loading }: Props) {
       setLocError('Please search for a location or enter coordinates.')
       return
     }
-    onSubmit({ date, lat: latN, lng: lngN, timezone, locationName: locName, region, ayanamsha })
-  }, [date, lat, lng, timezone, locName, region, ayanamsha, onSubmit])
+    onSubmit({
+      date, lat: latN, lng: lngN, timezone, locationName: locName, region, ayanamsha,
+      lang, calendarSystem,   // [V1.1]
+    })
+  }, [date, lat, lng, timezone, locName, region, ayanamsha, lang, calendarSystem, onSubmit])
 
   const inputCls = `
     w-full bg-navy-900/60 border border-white/10 text-cream-100
@@ -275,7 +300,7 @@ export default function PanchangaForm({ onSubmit, loading }: Props) {
       </div>
 
       {/* ── Region + Ayanamsha ────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
         <div>
           <label htmlFor="region" className={labelCls}>Regional Tradition</label>
           <select
@@ -299,6 +324,39 @@ export default function PanchangaForm({ onSubmit, loading }: Props) {
               <option key={a.value} value={a.value}>{a.label}</option>
             ))}
           </select>
+        </div>
+      </div>
+
+      {/* ── [V1.1] Language + Calendar System ───────────────────────────────── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+        <div>
+          <label htmlFor="lang" className={labelCls}>Display Language</label>
+          <select
+            id="lang" value={lang}
+            onChange={e => setLang(e.target.value as LangCode)}
+            className={inputCls}
+          >
+            {LANGUAGES.map(l => (
+              <option key={l.value} value={l.value}>{l.label}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label htmlFor="calendarSystem" className={labelCls}>
+            Masa System
+          </label>
+          <select
+            id="calendarSystem" value={calendarSystem}
+            onChange={e => setCalendarSystem(e.target.value as CalendarSystemType)}
+            className={inputCls}
+          >
+            {CALENDAR_SYSTEMS.map(c => (
+              <option key={c.value} value={c.value}>{c.label}</option>
+            ))}
+          </select>
+          <p className="mt-1 font-sans text-[0.65rem] text-cream-100/35">
+            {CALENDAR_SYSTEMS.find(c => c.value === calendarSystem)?.hint}
+          </p>
         </div>
       </div>
 

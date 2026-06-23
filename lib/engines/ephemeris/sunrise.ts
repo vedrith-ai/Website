@@ -10,7 +10,6 @@ import {
   toRad,
   toDeg,
   gregorianToJD,
-  jdToDate,
   julianCenturies,
 } from './julian-day'
 import { computeSolarPosition } from './solar'
@@ -132,7 +131,7 @@ function findMoonEvent(
   let jdEst = gregorianToJD(year, month, day, event === 'rise' ? 6.0 : 18.0)
 
   for (let iter = 0; iter < 5; iter++) {
-    const { tropicalLongitude: moonLng, latitude: moonLat, distanceKm } =
+    const { tropicalLongitude: moonLng, latitude: moonLat } =
       computeLunarPosition(jdEst)
 
     // Moon's equatorial coordinates (approximate)
@@ -158,7 +157,7 @@ function findMoonEvent(
     jdEst = jdNew
   }
 
-  const { year: ry, month: rm, day: rd, hour: rh } = jdToGregorianLocal(jdEst)
+  const { hour: rh } = jdToGregorianLocal(jdEst)
   return utHourToDate(year, month, day, rh + (jdEst - gregorianToJD(year, month, day, 0)) * 24)
 }
 

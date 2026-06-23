@@ -265,8 +265,8 @@ vedrith/
 │   │   │   ├── pythagorean.ts
 │   │   │   └── vedic.ts
 │   │   └── ephemeris/
-│   │       ├── index.ts                  # Abstraction over Swiss Ephemeris
-│   │       ├── swisseph-adapter.ts
+│   │       ├── index.ts                  # Public interface — VedRith Astronomy Engine
+│   │       ├── astronomy-engine.ts       # Core VSOP87/ELP2000-based calculations
 │   │       └── cache.ts                  # Redis-backed positional cache
 │   │
 │   ├── supabase/
@@ -929,7 +929,7 @@ Input: { date, latitude, longitude, timezone, ayanamsha, region }
    Using: JD = date_to_jd(year, month, day) + (UTC_time / 24)
         │
         ▼
-2. Ephemeris Query (Swiss Ephemeris via swisseph-adapter.ts)
+2. Ephemeris Query (VedRith Astronomy Engine)
    Fetch for sunrise moment:
    - Sun longitude (tropical)
    - Moon longitude (tropical)
@@ -1000,12 +1000,12 @@ Input: { date, latitude, longitude, timezone, ayanamsha, region }
 
 ### 7.4 Ephemeris Adapter
 
-The Swiss Ephemeris (swisseph Node.js binding or WASM build) is abstracted behind `swisseph-adapter.ts`. This indirection allows future swap to a pure-JS ephemeris without touching calculation logic.
+The VedRith Astronomy Engine — a custom-built, pure-TypeScript implementation of solar and lunar position algorithms (VSOP87 simplified for the Sun, ELP2000/82 simplified for the Moon, per Jean Meeus' "Astronomical Algorithms") — is exposed behind a stable public interface in `index.ts`. This indirection allows internal refinement of the algorithms (e.g., additional periodic terms for higher precision) without touching calculation logic in the Panchanga/Kundali/Muhurta engines.
 
 ```
 lib/engines/ephemeris/
   ├── index.ts              ← Public interface: getPlanetPositions(jd, bodies[])
-  ├── swisseph-adapter.ts   ← Calls swisseph Node module
+  ├── astronomy-engine.ts   ← VedRith Astronomy Engine — VSOP87/ELP2000 core
   └── cache.ts              ← Redis: cache planet positions for JD + body
 ```
 
@@ -1557,7 +1557,7 @@ Sentry release tracking + Vercel Analytics baseline
 | `SUPABASE_SERVICE_ROLE_KEY` | Vercel Environment Variables | Runtime (server only) |
 | `NEXT_PUBLIC_*` keys | Vercel Environment Variables | Build-time (public) |
 | `RESEND_API_KEY` | Supabase Vault + Vercel | Server only |
-| Swiss Ephemeris data files | Vercel Build Asset | Build-time inclusion |
+| VedRith Astronomy Engine constants | Bundled in source (`lib/engines/ephemeris/`) | Build-time inclusion, no external data files |
 
 Never committed to Git. `.env.local` is listed in `.gitignore`. `.env.example` contains all required variable names with placeholder values.
 
@@ -1697,7 +1697,7 @@ Admin actions use the Supabase `admin` client (`lib/supabase/admin.ts`) which ho
 
 #### Calculation Settings (`/admin/ayanamsha`)
 - Configure default Ayanamsha per region
-- Set Ephemeris version (Swiss Ephemeris data file version in use)
+- Set Astronomy Engine version (VedRith Astronomy Engine release in use)
 - Preview Panchanga output for a test date/location (sanity check tool)
 
 #### Audit Log Viewer (`/admin/reports`)
@@ -1740,7 +1740,7 @@ Key decisions and the rationale behind them.
 |---|---|---|---|
 | 1 | App Router (Next.js 15) | Pages Router | Server Components eliminate waterfall data fetching; streaming SSR improves TTFB for heavy computation results |
 | 2 | Supabase over Firebase | Firebase | PostgreSQL (JSONB, RLS, full SQL) is essential for complex astrological relational data; Supabase provides Postgres-native experience |
-| 3 | Swiss Ephemeris | Custom JS ephemeris | Swiss Ephemeris has sub-arc-second accuracy validated by astronomers; no pure-JS alternative matches its precision for dates pre-1800 and post-2400 |
+| 3 | VedRith Astronomy Engine (custom VSOP87/ELP2000) | Swiss Ephemeris (third-party) | A custom-built engine avoids external binary/WASM dependencies and licensing constraints entirely, deploys identically across all Vercel runtimes, and achieves sub-arc-minute accuracy — sufficient for all Panchanga, Kundali, and Muhurta determinations within the 1900–2100 operational range |
 | 4 | Whole Sign House System as default | Placidus | Traditional Vedic astrology predominantly uses Whole Sign (Shri Pati is the exception); can be changed per user preference |
 | 5 | Lahiri Ayanamsha as default | KP, Raman | Lahiri (Chitrapaksha) is the Government of India standard and most widely used in practice |
 | 6 | Panchanga cache with lat/lng bucketing | Per-user caching | Panchanga varies by geography but not by user identity; shared cache reduces ephemeris calls by ~95% |

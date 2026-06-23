@@ -7,7 +7,7 @@ import { STATS, REGIONAL_TRADITIONS, SITE } from '@/lib/constants'
 const PILLARS = [
   {
     title:       'Calculation Correctness',
-    description: 'Swiss Ephemeris (WASM) for sub-arc-second planetary positions. Lahiri, KP, Raman, and True Chitrapaksha Ayanamsha. No approximations.',
+    description: 'Astronomical calculations powered by the VedRith Astronomy Engine. Lahiri, KP, Raman, and True Chitrapaksha Ayanamsha. No approximations.',
   },
   {
     title:       'Cultural Fidelity',

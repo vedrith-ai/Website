@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, type ChangeEvent, type FormEvent } from 'react'
 import Image          from 'next/image'
 import SectionHeader  from '@/components/ui/SectionHeader'
 import OrnamentDivider from '@/components/ui/OrnamentDivider'
@@ -40,7 +40,7 @@ export default function ContactSection() {
 
   // ── Input change handler ──────────────────────────────────────────────────
   const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
       const { name, value } = e.target
       setForm(prev  => ({ ...prev,  [name]: value }))
       setErrors(prev => ({ ...prev, [name]: undefined }))
@@ -50,7 +50,7 @@ export default function ContactSection() {
 
   // ── Submit handler ────────────────────────────────────────────────────────
   const handleSubmit = useCallback(
-    async (e: React.FormEvent) => {
+    async (e: FormEvent) => {
       e.preventDefault()
       const validationErrors = validate(form)
       if (Object.keys(validationErrors).length > 0) {

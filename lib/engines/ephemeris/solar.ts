@@ -50,9 +50,6 @@ export function computeSolarPosition(jde: number): SolarPosition {
   // ── Sun's true longitude ───────────────────────────────────────────────────
   const sunTrue = normalize360(L0 + C)
 
-  // ── Sun's true anomaly ────────────────────────────────────────────────────
-  const v = normalize360(M + C)
-
   // ── Apparent longitude (nutation + aberration) ────────────────────────────
   const omega    = normalize360(125.04 - 1934.136 * T)
   const omegaRad = toRad(omega)

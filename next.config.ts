@@ -26,8 +26,8 @@ const nextConfig: NextConfig = {
               "img-src 'self' data: blob:",
               // next/font self-hosts Google Fonts — 'self' is correct here
               "font-src 'self'",
-              // Allow same-origin + future API subdomain (e.g. api.vedrith.com)
-              "connect-src 'self' https://*.vedrith.com",
+              // Allow same-origin, future API subdomain, and Nominatim geocoding (PanchangaForm)
+              "connect-src 'self' https://*.vedrith.com https://nominatim.openstreetmap.org",
             ].join('; '),
           },
         ],

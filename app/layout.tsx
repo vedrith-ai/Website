@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
-import { Cormorant_Garamond, Lato } from 'next/font/google'
+import type { ReactNode } from 'react'
+import { Cormorant_Garamond, Lato, Noto_Sans_Kannada } from 'next/font/google'
 import './globals.css'
 import { SITE } from '@/lib/constants'
 
@@ -19,6 +20,16 @@ const lato = Lato({
   weight:   ['300', '400', '700'],
   subsets:  ['latin'],
   variable: '--font-lato',
+  display:  'swap',
+})
+
+// [V1.1] Kannada script support for Panchanga display names (ಪಾಡ್ಯ, ಅಶ್ವಿನಿ, etc.)
+// Architecture note: adding Telugu/Tamil/Malayalam fonts in a future release
+// follows this exact pattern — one Noto_Sans_<Script> import + one CSS variable.
+const notoKannada = Noto_Sans_Kannada({
+  weight:   ['400', '500', '600', '700'],
+  subsets:  ['kannada'],
+  variable: '--font-kannada',
   display:  'swap',
 })
 
@@ -104,12 +115,12 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: ReactNode
 }>) {
   return (
     <html
       lang="en"
-      className={`${cormorant.variable} ${lato.variable}`}
+      className={`${cormorant.variable} ${lato.variable} ${notoKannada.variable}`}
     >
       <body className="font-sans antialiased">
         {children}

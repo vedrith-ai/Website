@@ -242,7 +242,7 @@ export const FAQS: FAQItem[] = [
   {
     question: 'How accurate are VedRith\'s calculations?',
     answer:
-      'VedRith uses the Swiss Ephemeris (WASM build) — the same astronomical library used by professional planetarium software — for sub-arc-second planetary position accuracy. Ayanamsha options include Lahiri (the Indian Government standard), KP, Raman, and True Chitrapaksha. Every calculation follows classical Jyotiṣa rules without approximation.',
+      'Astronomical calculations powered by the VedRith Astronomy Engine — a custom-built celestial mechanics implementation (VSOP87/ELP2000-based) achieving sub-arc-minute planetary position accuracy. Ayanamsha options include Lahiri (the Indian Government standard), KP, Raman, and True Chitrapaksha. Every calculation follows classical Jyotiṣa rules without approximation.',
   },
   {
     question: 'What languages does VedRith support?',

@@ -232,7 +232,7 @@ Following the VedRith Architecture v2.1.0:
 
 1. **Authentication** — Integrate Supabase Auth with email/OTP and Google OAuth
 2. **Dashboard shell** — Build the `(dashboard)/` route group with sidebar layout
-3. **Panchanga engine** — Implement `lib/engines/panchanga/` (Swiss Ephemeris WASM)
+3. **Panchanga engine** — Implement `lib/engines/panchanga/` (VedRith Astronomy Engine — custom VSOP87/ELP2000-based, implemented and live as of V1.1)
 4. **Kundali engine** — Implement `lib/engines/kundali/` with Vimshottari Dasha
 5. **Muhurta engine** — Implement `lib/engines/muhurta/` with weighted scoring
 6. **Database** — Apply Supabase migrations from `supabase/migrations/`

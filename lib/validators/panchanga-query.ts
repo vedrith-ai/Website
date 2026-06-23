@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Panchanga Query Validator
+// Panchanga Query Validator  (V1.1 — additive extensions marked below)
 // Zod schema — applied at the API route boundary before any calculation
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -24,6 +24,12 @@ export const AyanamshaSchema = z.enum([
   'RAMAN',
   'TRUE_CHITRA',
 ])
+
+// ── [V1.1] Valid language codes ───────────────────────────────────────────────
+export const LangSchema = z.enum(['en', 'kn']).default('en')
+
+// ── [V1.1] Calendar system ────────────────────────────────────────────────────
+export const CalendarSystemSchema = z.enum(['AMANTA', 'PURNIMANTA']).default('AMANTA')
 
 // ── Date format: YYYY-MM-DD ───────────────────────────────────────────────────
 const ISO_DATE_REGEX = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/
@@ -71,6 +77,13 @@ export const PanchangaQuerySchema = z.object({
     .string()
     .max(120, 'Location name too long')
     .optional(),
+
+  /** [V1.1] Display language — 'en' (English) or 'kn' (Kannada). Default: 'en' */
+  lang: LangSchema,
+
+  /** [V1.1] Lunar calendar system — 'AMANTA' (South Indian) or 'PURNIMANTA' (North Indian).
+   *  Default: 'AMANTA' (correct for Kannada tradition) */
+  calendarSystem: CalendarSystemSchema,
 })
 
 export type ValidatedPanchangaQuery = z.infer<typeof PanchangaQuerySchema>
@@ -78,15 +91,19 @@ export type ValidatedPanchangaQuery = z.infer<typeof PanchangaQuerySchema>
 /**
  * Parse and validate a raw query params object (from URL search params).
  * Returns { success: true, data } or { success: false, error }.
+ * Fully backward-compatible — new fields have defaults; old callers need no changes.
  */
 export function parsePanchangaQuery(raw: Record<string, string | undefined>) {
   return PanchangaQuerySchema.safeParse({
-    date:         raw.date,
-    lat:          raw.lat  !== undefined ? parseFloat(raw.lat)  : undefined,
-    lng:          raw.lng  !== undefined ? parseFloat(raw.lng)  : undefined,
-    timezone:     raw.timezone,
-    region:       raw.region,
-    ayanamsha:    raw.ayanamsha,
-    locationName: raw.locationName,
+    date:           raw.date,
+    lat:            raw.lat  !== undefined ? parseFloat(raw.lat)  : undefined,
+    lng:            raw.lng  !== undefined ? parseFloat(raw.lng)  : undefined,
+    timezone:       raw.timezone,
+    region:         raw.region,
+    ayanamsha:      raw.ayanamsha,
+    locationName:   raw.locationName,
+    lang:           raw.lang,
+    calendarSystem: raw.calendarSystem,
   })
 }
+
