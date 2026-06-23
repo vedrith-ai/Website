@@ -52,6 +52,7 @@ export const FEATURES: Feature[] = [
     description: 'Daily Tithi, Nakshatra, Yoga, Karana and Vara for any Indian city. Supports 8 regional traditions including Telugu, Tamil, Kannada and Malayalam.',
     tier:        'Free',
     status:      'soon',
+    href: '/panchanga',
   },
   {
     id:          'kundali',
