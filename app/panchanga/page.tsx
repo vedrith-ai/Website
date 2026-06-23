@@ -66,7 +66,7 @@ export default function PanchangaPage() {
      <div className="border-b border-white/[0.06] pt-20 pb-10 px-4">
         <div className="max-w-7xl mx-auto">
           <p className="font-sans text-[0.6rem] tracking-[0.3em] uppercase text-gold-500 mb-3">
-            Pañcāṅga Engine V1.1
+            Panchanga
           </p>
           <h1 className="font-serif text-3xl md:text-4xl font-light text-cream-100 mb-2 leading-tight">
             Traditional Kannada Panchanga Calculator
