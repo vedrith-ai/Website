@@ -133,7 +133,7 @@ export default function FeaturesSection() {
   {FEATURES.map((feature) =>
     feature.id === 'panchanga' ? (
       <Link
-        key={LIVE.id}
+        key={feature.id}
         href="/panchanga"
         className="block"
       >
