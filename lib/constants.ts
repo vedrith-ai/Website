@@ -41,7 +41,8 @@ export interface Feature {
   title:       string
   description: string
   tier:        FeatureTier
-  status:      'soon' | 'planned' | 'future'
+  status:      'LIVE' | 'soon' | 'planned' | 'future'
+  href?: string
 }
 
 export const FEATURES: Feature[] = [
@@ -51,8 +52,9 @@ export const FEATURES: Feature[] = [
     title:       'Panchanga',
     description: 'Daily Tithi, Nakshatra, Yoga, Karana and Vara for any Indian city. Supports 8 regional traditions including Telugu, Tamil, Kannada and Malayalam.',
     tier:        'Free',
-    status:      'soon',
+    status:      'LIVE',
     href: '/panchanga',
+    
   },
   {
     id:          'kundali',
