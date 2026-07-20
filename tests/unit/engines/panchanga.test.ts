@@ -628,10 +628,13 @@ describe('Abhijit Muhurta', () => {
     expect(Math.abs(centre - solarNoon)).toBeLessThan(60_000)  // within 1 minute
   })
 
-  test('Abhijit Muhurta duration ≈ 48 minutes', () => {
+  test('Abhijit Muhurta duration matches daytime/15', () => {
     const abhijit = computeAbhijitMuhurta(sunrise, sunset, TZ)
     const durationMin = (abhijit.end.getTime() - abhijit.start.getTime()) / 60_000
-    expect(durationMin).toBeCloseTo(48, 0)
+    const daytimeMin  = (sunset.getTime() - sunrise.getTime()) / 60_000
+    // This fixture is a June day (~12.5h daytime in India), so the correct
+    // duration is daytime/15 = 50 min, not the flat 48 min a 12h-day would give.
+    expect(durationMin).toBeCloseTo(daytimeMin / 15, 1)
   })
 
   test('Abhijit Muhurta falls within daytime', () => {

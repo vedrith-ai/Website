@@ -368,5 +368,5 @@ export const NAKSHATRA_KNOWLEDGE: Record<string, NakshatraKnowledge> = {
 }
 
 export function getNakshatraKnowledge(key: string): NakshatraKnowledge | null {
-  return NAKSHATRA_KNOWLEDGE[key] ?? null
+  return NAKSHATRA_KNOWLEDGE[key] ?? NAKSHATRA_KNOWLEDGE[key.replace(/\s+/g, '')] ?? null
 }
