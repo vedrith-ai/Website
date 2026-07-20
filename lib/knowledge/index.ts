@@ -1,12 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// VedRith Knowledge Base — Public API
+// VedRith Knowledge Base — Public API  [V1.1]
 //
-// Single import surface for:
-//   - Localization (English/Kannada display names — extensible to more languages)
-//   - Static knowledge entries for Tithi, Nakshatra, Yoga, Karana
-//
-// Usage:
-//   import { getTithiKnowledge, pickName, TITHI_NAMES } from '@/lib/knowledge'
+// Single import surface for all Traditional Knowledge Engine exports.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export * from './localization'
@@ -14,3 +9,4 @@ export * from './tithi-knowledge'
 export * from './nakshatra-knowledge'
 export * from './yoga-knowledge'
 export * from './karana-knowledge'
+export * from './vara-knowledge'

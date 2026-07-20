@@ -24,6 +24,8 @@ import { computeAbhijitMuhurta }             from './abhijit'
 import { getRegionalConfig }                 from './regional'
 import { computeMasa }                       from './masa'         // [V1.1]
 import { computeSamvatsara }                 from './samvatsara'   // [V1.1]
+import { computeDurmuhurtas, computeVarjyam } from './durmuhurta'  // [V1.1]
+import { computeDailyRecommendations }        from './recommendations' // [V1.1]
 import {
   VARA_NAMES, getTithiNameTable,
   NAKSHATRA_NAMES, YOGA_NAMES, getKaranaNameTable, pickName,
@@ -124,7 +126,38 @@ export async function computePanchanga(
   // ── 10. Abhijit Muhurta ────────────────────────────────────────────────────
   const abhijitMuhurta = computeAbhijitMuhurta(sunrise, sunset, timezone)
 
-  // ── 11. Format display times ───────────────────────────────────────────────
+  // ── 11. [V1.1] Durmuhurta and Varjyam ────────────────────────────────────
+  const durmuhurtaWindows = computeDurmuhurtas(sunrise, sunset, weekday, timezone)
+  const durmuhurtas = durmuhurtaWindows.map((period, index) => ({ index, period }))
+
+  // Approximate nakshatra start: endTime minus one nakshatra duration
+  // A nakshatra spans ~13°20′ of the Moon's orbit ≈ 27h / 27 ≈ ~60 ghatikas
+  const NAKSHATRA_DURATION_MS = 24 * 60 * 60 * 1000   // ~24h as safe approximation
+  const nakshatraStart = new Date(nakshatra.endTime.getTime() - NAKSHATRA_DURATION_MS)
+  const varjyamPeriod = computeVarjyam(
+    nakshatraStart,
+    nakshatra.endTime,
+    nakshatra.number,
+    timezone,
+  )
+  const varjyam = { nakshatraNumber: nakshatra.number, period: varjyamPeriod }
+
+  // ── 11b. [V1.1] Daily Recommendations ────────────────────────────────────
+  const recommendations = computeDailyRecommendations({
+    tithi:     tithi.name,
+    nakshatra: nakshatra.name,
+    yoga:      yoga.name,
+    karana:    karana.name,
+    vara:      vara.name,
+  })
+
+  // ── 11c. [V1.1] Source Attribution ───────────────────────────────────────
+  const attribution = {
+    calculations: 'VedRith Astronomical Engine — pure TypeScript, Keplerian orbital mechanics, Meeus algorithms. No Swiss Ephemeris dependency.',
+    knowledge:    'Traditional Knowledge Engine — classical Jyotisha texts: Muhurta Chintamani (Rama Dayalu), Dharma Sindhu (Kashinath Upadhyaya), Brihat Samhita (Varahamihira), Jataka Parijata, Hora Sara (Prithuyasas).',
+  }
+
+  // ── 12. Format display times ───────────────────────────────────────────────
   const sunriseLocal   = formatLocalTime(sunrise,  timezone)
   const sunsetLocal    = formatLocalTime(sunset,   timezone)
   const moonriseLocal  = moonrise ? formatLocalTime(moonrise, timezone) : null
@@ -200,6 +233,11 @@ export async function computePanchanga(
     gulikaKalam,
     yamaganda,
     abhijitMuhurta,
+
+    durmuhurtas,                                    // [V1.1]
+    varjyam,                                        // [V1.1]
+    recommendations,                                // [V1.1]
+    attribution,                                    // [V1.1]
 
     computedAt: new Date().toISOString(),
     julianDay:  parseFloat(jdAtSunrise.toFixed(6)),

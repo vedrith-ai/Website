@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { Cormorant_Garamond, Lato, Noto_Sans_Kannada } from 'next/font/google'
 import './globals.css'
 import { SITE } from '@/lib/constants'
+import ServiceWorkerRegistration from '@/components/layout/ServiceWorkerRegistration'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Fonts — loaded via next/font (zero CLS, self-hosted via Google CDN)
@@ -94,13 +95,23 @@ export const metadata: Metadata = {
     description: SITE.description,
     images:      ['/images/logo-full.png'],
   },
+  manifest: '/manifest.json',
   icons: {
-    icon:             '/images/logo-circular.png',
+    icon: [
+      { url: '/images/logo-circular.png' },
+      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+    ],
     shortcut:         '/images/logo-circular.png',
-    apple:            '/images/logo-circular.png',
+    apple:            '/icons/apple-touch-icon.png',
     other: [
       { rel: 'mask-icon', url: '/images/logo-circular.png', color: '#1B2A4A' },
     ],
+  },
+  appleWebApp: {
+    capable:        true,
+    statusBarStyle: 'default',
+    title:           SITE.name,
   },
   alternates: {
     canonical: SITE.url,
@@ -124,6 +135,7 @@ export default function RootLayout({
     >
       <body className="font-sans antialiased">
         {children}
+        <ServiceWorkerRegistration />
       </body>
     </html>
   )

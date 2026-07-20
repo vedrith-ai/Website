@@ -197,6 +197,27 @@ export interface PanchangaResult {
   // Metadata
   computedAt: string          // ISO timestamp
   julianDay:  number          // JD at local sunrise
+
+  // [V1.1] Traditional Knowledge Engine
+  durmuhurtas:     DurmuhurtaResult[]
+  varjyam:         VarjyamResult
+  recommendations: {
+    marriage:         ActivityRecommendation
+    gruhaProvesha:    ActivityRecommendation
+    aksharabhyasa:    ActivityRecommendation
+    upanayana:        ActivityRecommendation
+    vehiclePurchase:  ActivityRecommendation
+    businessOpening:  ActivityRecommendation
+    travel:           ActivityRecommendation
+    landPurchase:     ActivityRecommendation
+    bhooomiPooja:     ActivityRecommendation
+    namingCeremony:   ActivityRecommendation
+    annaprashana:     ActivityRecommendation
+  }
+  attribution: {
+    calculations: string
+    knowledge:    string
+  }
 }
 
 // ── Geocode result ────────────────────────────────────────────────────────────
@@ -230,3 +251,26 @@ export interface ApiError {
 
 export type ApiResponse<T> = ApiSuccess<T> | ApiError
 
+
+// ─────────────────────────────────────────────────────────────────────────────
+// [V1.1] — Traditional Knowledge Engine additions
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface ActivityRecommendation {
+  activity:     string
+  status:       'auspicious' | 'inauspicious' | 'neutral'
+  reason:       string
+  contributors: string[]
+}
+
+/** A single Durmuhurta (inauspicious period) window */
+export interface DurmuhurtaResult {
+  index:  number
+  period: TimeRange
+}
+
+/** Varjyam — inauspicious sub-period within the Nakshatra */
+export interface VarjyamResult {
+  nakshatraNumber: number
+  period:          TimeRange
+}

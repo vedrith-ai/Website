@@ -1,8 +1,6 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import Image                       from 'next/image'
-import Link                        from 'next/link'
 import PanchangaForm               from '@/components/panchanga/PanchangaForm'
 import PanchangaResult             from '@/components/panchanga/PanchangaResult'
 import type { PanchangaResult as TPanchangaResult, ApiResponse } from '@/lib/types/panchanga'

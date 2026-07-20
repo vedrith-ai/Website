@@ -53,8 +53,7 @@ export const FEATURES: Feature[] = [
     description: 'Daily Tithi, Nakshatra, Yoga, Karana and Vara for any Indian city. Supports 8 regional traditions including Telugu, Tamil, Kannada and Malayalam.',
     tier:        'Free',
     status:      'LIVE',
-
-    
+    href:        '/panchanga',
   },
   {
     id:          'kundali',
@@ -62,7 +61,8 @@ export const FEATURES: Feature[] = [
     title:       'Kundali Generation',
     description: 'Complete Vedic birth chart with planetary positions, Lagna, 12 house cusps, Vimshottari Dasha sequence, divisional charts (D9, D10), Yoga and Dosha detection.',
     tier:        'Free',
-    status:      'soon',
+    status:      'LIVE',
+    href:        '/kundali',
   },
   {
     id:          'muhurta',
