@@ -72,7 +72,9 @@ function FeatureCard({ feature }: { feature: Feature }) {
           font-sans text-[0.6rem] tracking-[0.15em] uppercase
           ${feature.status === 'soon' ? 'text-gold-500/80' : 'text-cream-100/30'}
         `}>
-          {feature.status === 'LIVE' ? 'Live' : STATUS_LABEL[feature.status]}
+          {feature.id === 'panchanga'
+  ? 'Live'
+  : STATUS_LABEL[feature.status]}
         </span>
       </div>
 
@@ -131,12 +133,11 @@ export default function FeaturesSection() {
         {/* Features grid — 3×3 desktop, 2×5 tablet, 1 mobile */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
   {FEATURES.map((feature) =>
-    feature.status === 'LIVE' && feature.href ? (
+    feature.id === 'panchanga' ? (
       <Link
         key={feature.id}
-        href={feature.href}
-        className="block focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-500 focus-visible:outline-offset-2 rounded-sm"
-        aria-label={`Open ${feature.title}`}
+        href="/panchanga"
+        className="block"
       >
         <FeatureCard feature={feature} />
       </Link>

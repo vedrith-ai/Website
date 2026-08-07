@@ -1,17 +1,84 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   Google Fonts — loaded at browser runtime (not Next.js build time).
+   Preconnect hint is in layout.tsx <head>.
+   ───────────────────────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Lato:wght@300;400;700&family=Noto+Sans+Kannada:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   Font CSS Variables — set on .vedrith-fonts (applied to <html>).
+   Tailwind maps font-serif → var(--font-cormorant), font-sans → var(--font-lato).
+   Fallback stacks ensure text is always readable even before fonts load.
+   ───────────────────────────────────────────────────────────────────────────── */
+.vedrith-fonts {
+  --font-cormorant: 'Cormorant Garamond', 'Palatino Linotype', Georgia, serif;
+  --font-lato:      'Lato', 'Helvetica Neue', Arial, sans-serif;
+  --font-kannada:   'Noto Sans Kannada', 'Kannada Sangam MN', sans-serif;
+}
+
+/* Kannada text utility */
+.font-kannada {
+  font-family: var(--font-kannada);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    CSS Custom Properties — VedRith Design Tokens
    ───────────────────────────────────────────────────────────────────────────── */
 :root {
+  /* ── Brand colours (hex, for direct var() usage) ──────────────────────── */
   --navy:       #1B2A4A;
   --gold:       #C9A052;
   --gold-light: #E8C97A;
   --gold-dark:  #A07830;
   --cream:      #F8F3EC;
   --cream-dark: #F0E6D3;
+
+  /* ── Semantic colour tokens — RGB channel triplets (R G B, no commas).   ──
+     Used by Tailwind classes such as bg-background, text-foreground, etc.
+     The rgb(var(--x) / <alpha>) pattern in tailwind.config.ts picks these up
+     so opacity modifiers (bg-background/95, bg-muted/30) work correctly.
+
+     Light-theme defaults match the cream landing-page background.         ── */
+  --background:        248 243 236;   /* cream   — #F8F3EC */
+  --foreground:         27  42  74;   /* navy    — #1B2A4A */
+  --muted:             224 214 198;   /* cream-200 approx */
+  --muted-foreground:  100 115 143;   /* navy-400 approx  */
+  --border:             27  42  74;   /* navy (used at low opacity) */
+  --ring:              201 160  82;   /* gold-500 — #C9A052 */
+  --card:              253 251 248;   /* cream-50 — #FDFBF8 */
+  --card-foreground:    27  42  74;
+  --popover:           253 251 248;
+  --popover-foreground: 27  42  74;
+}
+
+/* ── Dark-theme override — applied to all dark-bg pages via a wrapper class.
+   The functional pages (Panchanga, Kundali, Dashboard) use bg-navy-950 as
+   their outer container.  Adding .dark to <html> or any ancestor switches
+   the entire token set to the navy palette.
+   The app currently renders dark pages without adding a .dark class, so we
+   add the override directly on the body children that carry bg-navy-950/900.
+   A simpler, bullet-proof approach is to declare the tokens in :root that
+   match what the dark pages actually need — since the landing page uses its
+   own explicit colour classes (navy-900, gold-500, cream-100) and does NOT
+   rely on the semantic tokens, and the functional pages DO rely on them with
+   dark expectations, we set :root to dark values and let the landing page
+   continue to use its explicit colour classes.                             ── */
+
+/* Override :root tokens to dark values — functional pages are primary       */
+:root {
+  --background:        13  21  37;   /* navy-950 — #0D1525 */
+  --foreground:       248 243 236;   /* cream    — #F8F3EC */
+  --muted:             27  42  74;   /* navy-900 — #1B2A4A */
+  --muted-foreground: 248 243 236;   /* cream (muted via opacity) */
+  --border:           255 255 255;   /* white    (used at 0.06–0.20 opacity) */
+  --ring:             201 160  82;   /* gold-500 — #C9A052 */
+  --card:              27  42  74;   /* navy-900 — #1B2A4A */
+  --card-foreground:  248 243 236;
+  --popover:           13  21  37;   /* navy-950 */
+  --popover-foreground: 248 243 236;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

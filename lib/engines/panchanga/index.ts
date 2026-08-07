@@ -30,12 +30,19 @@ import {
   VARA_NAMES, getTithiNameTable,
   NAKSHATRA_NAMES, YOGA_NAMES, getKaranaNameTable, pickName,
 } from '../../knowledge/localization'                              // [V1.1]
+import { generateFestivalsForDay }            from '../festivals'   // [V1.3]
+import {
+  getDailyDeity,
+  getDailySpiritualMessage,
+  getDailyAuspicious,
+} from './daily-enrichment'                                         // [V1.3]
 import type {
   PanchangaQuery,
   PanchangaResult,
   AyanamshaKey,
   LanguageCode,
   CalendarSystem,
+  FestivalSummary,
 } from '../../types/panchanga'
 
 /**
@@ -196,6 +203,44 @@ export async function computePanchanga(
     vikramYear:  samvatsaraRaw.vikramYear,
   }
 
+  // ── 14. [V1.3] Festival generation ──────────────────────────────────────────
+  const TITHI_NUMBERS: Record<string, number> = {
+    Pratipada:1,Dvitiya:2,Tritiya:3,Chaturthi:4,Panchami:5,Shashthi:6,
+    Saptami:7,Ashtami:8,Navami:9,Dashami:10,Ekadashi:11,Dwadashi:12,
+    Trayodashi:13,Chaturdashi:14,Purnima:15,Amavasya:15,
+  }
+  const festivalCtx = {
+    lunarMonth:  masaRaw.amanta.name,
+    paksha:      tithi.paksha === 'SHUKLA' ? 'Shukla' as const : 'Krishna' as const,
+    tithiNumber: TITHI_NUMBERS[tithi.name] ?? tithi.number,
+    tithiKey:    tithi.name,
+    nakshatra:   nakshatra.name,
+    weekday:     vara.number,
+    region:      (region === 'KANNADA' ? 'Karnataka'
+               : region === 'TELUGU'  ? 'AndhraTelangana'
+               : region === 'TAMIL'   ? 'TamilNadu'
+               : region === 'MALAYALAM' ? 'Kerala'
+               : region === 'GUJARATI'  ? 'All'
+               : region === 'MAHARASHTRIAN' ? 'Maharashtra'
+               : 'All') as import('../festivals').RegionalProfile,
+  }
+  const festivalRegion = festivalCtx.region
+  const rawFestivals   = generateFestivalsForDay(festivalCtx, festivalRegion)
+  const festivals: FestivalSummary[] = rawFestivals.map(f => ({
+    nameEn:      f.nameEn,
+    nameKn:      f.nameKn,
+    type:        f.type,
+    deity:       f.deity,
+    description: f.description,
+    observance:  f.observance,
+    matchedOn:   f.matchedOn,
+  }))
+
+  // ── 15. [V1.3] Daily enrichment — deity, spiritual message, auspicious ───────
+  const dailyDeity      = getDailyDeity(vara.number)
+  const spiritualMessage = getDailySpiritualMessage(nakshatra.name)
+  const dailyAuspicious  = getDailyAuspicious(vara.number)
+
   return {
     date,
     location: {
@@ -238,6 +283,11 @@ export async function computePanchanga(
     varjyam,                                        // [V1.1]
     recommendations,                                // [V1.1]
     attribution,                                    // [V1.1]
+
+    festivals,                                      // [V1.3]
+    dailyDeity,                                     // [V1.3]
+    spiritualMessage,                               // [V1.3]
+    dailyAuspicious,                                // [V1.3]
 
     computedAt: new Date().toISOString(),
     julianDay:  parseFloat(jdAtSunrise.toFixed(6)),

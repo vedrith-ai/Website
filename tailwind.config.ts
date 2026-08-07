@@ -9,6 +9,26 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // ── Semantic tokens (CSS-variable-backed) ──────────────────────────
+        // These map to the CSS custom properties defined in globals.css
+        // and support Tailwind's opacity modifier syntax (e.g. bg-background/95)
+        background: 'rgb(var(--background) / <alpha-value>)',
+        foreground: 'rgb(var(--foreground) / <alpha-value>)',
+        muted: {
+          DEFAULT:    'rgb(var(--muted) / <alpha-value>)',
+          foreground: 'rgb(var(--muted-foreground) / <alpha-value>)',
+        },
+        border:   'rgb(var(--border) / <alpha-value>)',
+        ring:     'rgb(var(--ring) / <alpha-value>)',
+        card: {
+          DEFAULT:    'rgb(var(--card) / <alpha-value>)',
+          foreground: 'rgb(var(--card-foreground) / <alpha-value>)',
+        },
+        popover: {
+          DEFAULT:    'rgb(var(--popover) / <alpha-value>)',
+          foreground: 'rgb(var(--popover-foreground) / <alpha-value>)',
+        },
+        // ── VedRith brand palette ──────────────────────────────────────────
         navy: {
           50:  '#EEF1F7',
           100: '#D4DCEE',
@@ -105,7 +125,10 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    require('tailwindcss-animate'),
+  ],
 }
 
 export default config

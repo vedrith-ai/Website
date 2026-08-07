@@ -1,6 +1,8 @@
-import Image          from 'next/image'
-import OrnamentDivider from '@/components/ui/OrnamentDivider'
-import { SITE, STATS } from '@/lib/constants'
+import Image              from 'next/image'
+import Link               from 'next/link'
+import OrnamentDivider    from '@/components/ui/OrnamentDivider'
+import { SITE, STATS }    from '@/lib/constants'
+import { HeroPanchangaStrip } from './HeroPanchangaStrip'
 
 export default function HeroSection() {
   return (
@@ -114,12 +116,17 @@ export default function HeroSection() {
 
         {/* CTA buttons */}
         <div className="flex flex-col sm:flex-row gap-4 items-center justify-center animate-fade-up-delay-3">
-          <a href="#contact" className="btn-gold">
-            Join the Waitlist
+          <a href="#today" className="btn-gold">
+            View Today&apos;s Panchanga
           </a>
-          <a href="#features" className="btn-ghost">
-            Explore Features
-          </a>
+          <Link href="/kundali" className="btn-ghost">
+            Generate Kundali
+          </Link>
+        </div>
+
+        {/* [V1.3] Live Panchanga strip — shows today's key details */}
+        <div className="mt-8 w-full animate-fade-up-delay-3">
+          <HeroPanchangaStrip />
         </div>
 
         {/* Ornament divider before stats */}

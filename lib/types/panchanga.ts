@@ -218,6 +218,42 @@ export interface PanchangaResult {
     calculations: string
     knowledge:    string
   }
+
+  // [V1.3] Daily Enrichment — festivals, deity, spiritual message
+  festivals: FestivalSummary[]
+  dailyDeity: {
+    nameEn:   string
+    nameKn:   string
+    reasonEn: string
+    reasonKn: string
+    mantraEn: string
+    mantraKn?: string
+    symbol:   string
+  }
+  spiritualMessage: {
+    messageEn: string
+    messageKn: string
+    sourceEn:  string
+    sourceKn:  string
+  }
+  dailyAuspicious: {
+    colour:    { en: string; kn: string }
+    flower:    { en: string; kn: string }
+    number:    number
+    direction: { en: string; kn: string }
+  }
+}
+
+// ── [V1.3] Festival summary (embedded in PanchangaResult) ────────────────────
+
+export interface FestivalSummary {
+  nameEn:      string
+  nameKn:      string
+  type:        string
+  deity:       string
+  description: string
+  observance:  string
+  matchedOn:   string
 }
 
 // ── Geocode result ────────────────────────────────────────────────────────────

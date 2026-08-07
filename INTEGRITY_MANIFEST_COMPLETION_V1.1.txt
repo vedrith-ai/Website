@@ -1,0 +1,27 @@
+=== INTEGRITY MANIFEST — Platform Completion V1.1 ===
+TypeScript errors: 0
+Swiss Ephemeris violations: 0
+Protected engine files: UNCHANGED (MD5 verified below)
+'use client' on all browser components: YES
+I18n keys: 95 UI strings (EN + KN)
+Rich name calls in KundaliResult: 8
+
+--- Protected Panchanga Engine (unchanged) ---
+1f5272f050a168617a8b01eded68f3c9  /home/claude/project/Website-main/lib/engines/panchanga/tithi.ts
+c8255c17ef7e2271bbf6a40b8ed77c9c  /home/claude/project/Website-main/lib/engines/panchanga/nakshatra.ts
+205a8282fa2efe6503211e032e240008  /home/claude/project/Website-main/lib/engines/panchanga/yoga.ts
+8e936222343a89551486238d4fd8a722  /home/claude/project/Website-main/lib/engines/panchanga/karana.ts
+cd170f7288cc9d55e2bae8632c946c0b  /home/claude/project/Website-main/lib/engines/panchanga/rahu-kalam.ts
+4767f62b9fbd69e6a1b23e90476df15f  /home/claude/project/Website-main/lib/engines/ephemeris/julian-day.ts
+274667aa5d1245cc7514e9ab9512140b  /home/claude/project/Website-main/lib/engines/ephemeris/ayanamsha.ts
+
+--- V1.1 New Files ---
+bdaeb6699233117fd4f8111a71b4f453  /home/claude/project/Website-main/lib/i18n/types.ts
+61350a5d3f6042373a4e9179a05c505e  /home/claude/project/Website-main/lib/i18n/index.tsx
+0b9b57228012254483f7ddddd6aa2d4e  /home/claude/project/Website-main/lib/i18n/i18n.ts
+4afae080a456816d9014436228469c71  /home/claude/project/Website-main/lib/i18n/kundali-names.ts
+4dfdcce7901c52a1d9b719e702655a3a  /home/claude/project/Website-main/lib/i18n/translations/ui.ts
+166aa19cbf9f940f44bdec9529ebafbf  /home/claude/project/Website-main/lib/future/types.ts
+bc6fa5c950f0243a454bb1cbe05412bf  /home/claude/project/Website-main/components/error/ErrorBoundary.tsx
+b270e1e66070181d601d545e7f5b97fa  /home/claude/project/Website-main/components/panchanga/NextChangeCountdown.tsx
+2e528d940fc8b5f0a19d12eabf980d62  /home/claude/project/Website-main/components/kundali/KundaliResult.tsx

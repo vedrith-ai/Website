@@ -6,9 +6,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: '*',
-        allow:     '/',
-        // Disallow internal Next.js API routes and static build files
-        disallow: ['/_next/', '/api/'],
+        allow: '/',
+        disallow: ['/api/', '/offline'],
       },
     ],
     sitemap:   `${SITE.url}/sitemap.xml`,

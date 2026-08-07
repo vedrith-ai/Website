@@ -66,56 +66,56 @@ export default function KundaliBirthForm({ onSubmit, loading }: Props) {
 
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-5">
-      <div><label className={lbl}>Full Name</label>
-        <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="As it appears on the chart" className={inp} required /></div>
+      <div><label htmlFor="kb-name" className={lbl}>Full Name</label>
+        <input id="kb-name" type="text" value={name} onChange={e => setName(e.target.value)} placeholder="As it appears on the chart" className={inp} required /></div>
 
-      <div><p className={lbl}>Gender</p>
-        <div className="flex gap-2">
-          {GENDERS.map(g => <button key={g.value} type="button" onClick={() => setGender(g.value as Gender)} className={`flex-1 px-4 py-2.5 text-sm font-sans border transition-colors ${gender === g.value ? 'border-gold-500/60 bg-gold-500/15 text-gold-400' : 'border-white/10 bg-navy-900/40 text-cream-100/50'}`}>{g.label}</button>)}
+      <div><p className={lbl} id="kb-gender-label">Gender</p>
+        <div className="flex gap-2" role="group" aria-labelledby="kb-gender-label">
+          {GENDERS.map(g => <button key={g.value} type="button" onClick={() => setGender(g.value as Gender)} aria-pressed={gender === g.value} className={`flex-1 px-4 py-2.5 text-sm font-sans border transition-colors ${gender === g.value ? 'border-gold-500/60 bg-gold-500/15 text-gold-400' : 'border-white/10 bg-navy-900/40 text-cream-100/50'}`}>{g.label}</button>)}
         </div></div>
 
       <div className="grid grid-cols-2 gap-3">
-        <div><label className={lbl}>Date of Birth</label>
-          <input type="date" value={dateOfBirth} onChange={e => setDateOfBirth(e.target.value)} min="1900-01-01" max="2100-12-31" className={inp} style={{ colorScheme: 'dark' }} required /></div>
-        <div><label className={lbl}>Time of Birth</label>
-          <input type="time" value={timeOfBirth} onChange={e => setTimeOfBirth(e.target.value)} className={inp} style={{ colorScheme: 'dark' }} required /></div>
+        <div><label htmlFor="kb-dob" className={lbl}>Date of Birth</label>
+          <input id="kb-dob" type="date" value={dateOfBirth} onChange={e => setDateOfBirth(e.target.value)} min="1900-01-01" max="2100-12-31" className={inp} style={{ colorScheme: 'dark' }} required /></div>
+        <div><label htmlFor="kb-tob" className={lbl}>Time of Birth</label>
+          <input id="kb-tob" type="time" value={timeOfBirth} onChange={e => setTimeOfBirth(e.target.value)} className={inp} style={{ colorScheme: 'dark' }} required /></div>
       </div>
 
-      <div><label className={lbl}>Birth Place</label>
+      <div><label htmlFor="kb-place-query" className={lbl}>Birth Place</label>
         <div className="flex gap-2">
-          <input type="text" value={placeQuery} onChange={e => setPlaceQuery(e.target.value)}
+          <input id="kb-place-query" type="text" value={placeQuery} onChange={e => setPlaceQuery(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handlePlaceSearch())}
-            placeholder="Search city or town…" className={`${inp} flex-1`} />
+            placeholder="Search city or town…" className={`${inp} flex-1`} aria-autocomplete="list" aria-haspopup="listbox" />
           <button type="button" onClick={handlePlaceSearch} disabled={searching || !placeQuery.trim()}
             className="px-4 py-3 bg-gold-500/15 border border-gold-500/30 text-gold-400 hover:bg-gold-500/25 transition-colors disabled:opacity-40 font-sans text-xs uppercase tracking-wider whitespace-nowrap">
             {searching ? '…' : 'Search'}</button>
         </div>
-        {placeError && <p className="mt-1 text-xs text-red-400 font-sans">{placeError}</p>}
-        {results.length > 0 && <ul className="mt-2 border border-white/10 bg-navy-900/80 divide-y divide-white/5 max-h-48 overflow-y-auto">
-          {results.map((r, i) => <li key={i}><button type="button" onClick={() => selectPlace(r)} className="w-full text-left px-3 py-2.5 text-sm text-cream-100/80 hover:bg-gold-500/10 hover:text-gold-400 transition-colors">{r.displayName}</button></li>)}
+        {placeError && <p className="mt-1 text-xs text-red-400 font-sans" role="alert">{placeError}</p>}
+        {results.length > 0 && <ul role="listbox" aria-label="Place results" className="mt-2 border border-white/10 bg-navy-900/80 divide-y divide-white/5 max-h-48 overflow-y-auto">
+          {results.map((r, i) => <li key={i} role="option" aria-selected={false}><button type="button" onClick={() => selectPlace(r)} className="w-full text-left px-3 py-2.5 text-sm text-cream-100/80 hover:bg-gold-500/10 hover:text-gold-400 transition-colors">{r.displayName}</button></li>)}
         </ul>}
         {placeName && !results.length && <p className="mt-1 text-xs text-gold-500/70 font-sans">📍 {placeName}</p>}
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <div><label className={lbl}>Latitude</label><input type="number" step="0.000001" min="-90" max="90" value={lat} onChange={e => setLat(e.target.value)} placeholder="12.9716" className={inp} required /></div>
-        <div><label className={lbl}>Longitude</label><input type="number" step="0.000001" min="-180" max="180" value={lng} onChange={e => setLng(e.target.value)} placeholder="77.5946" className={inp} required /></div>
+        <div><label htmlFor="kb-lat" className={lbl}>Latitude</label><input id="kb-lat" type="number" step="0.000001" min="-90" max="90" value={lat} onChange={e => setLat(e.target.value)} placeholder="12.9716" className={inp} required /></div>
+        <div><label htmlFor="kb-lng" className={lbl}>Longitude</label><input id="kb-lng" type="number" step="0.000001" min="-180" max="180" value={lng} onChange={e => setLng(e.target.value)} placeholder="77.5946" className={inp} required /></div>
       </div>
 
-      <div><label className={lbl}>Timezone</label>
+      <div><label htmlFor="kb-tz" className={lbl}>Timezone</label>
         <div className="flex gap-2">
-          <input type="text" value={timezone} onChange={e => setTimezone(e.target.value)} placeholder="Asia/Kolkata" className={`${inp} flex-1`} required />
+          <input id="kb-tz" type="text" value={timezone} onChange={e => setTimezone(e.target.value)} placeholder="Asia/Kolkata" className={`${inp} flex-1`} required />
           <button type="button" onClick={() => setTimezone(getBrowserTimezone())} className="px-3 py-3 bg-navy-800 border border-white/10 text-cream-100/60 hover:text-gold-400 transition-colors font-sans text-xs whitespace-nowrap">Detect</button>
         </div>
         <p className="mt-1 text-[0.65rem] text-cream-100/30 font-sans">IANA format e.g. &quot;Asia/Kolkata&quot;</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div><label className={lbl}>Ayanamsha</label>
-          <select value={ayanamsha} onChange={e => setAyanamsha(e.target.value as KundaliFormValues['ayanamsha'])} className={inp}>
+        <div><label htmlFor="kb-ayanamsha" className={lbl}>Ayanamsha</label>
+          <select id="kb-ayanamsha" value={ayanamsha} onChange={e => setAyanamsha(e.target.value as KundaliFormValues['ayanamsha'])} className={inp}>
             {AYANAMSHAS.map(a => <option key={a.value} value={a.value}>{a.label}</option>)}</select></div>
-        <div><label className={lbl}>House System</label>
-          <select value={houseSystem} onChange={e => setHouseSystem(e.target.value as KundaliFormValues['houseSystem'])} className={inp}>
+        <div><label htmlFor="kb-house" className={lbl}>House System</label>
+          <select id="kb-house" value={houseSystem} onChange={e => setHouseSystem(e.target.value as KundaliFormValues['houseSystem'])} className={inp}>
             {HOUSE_SYSTEMS.map(h => <option key={h.value} value={h.value}>{h.label}</option>)}</select></div>
       </div>
 

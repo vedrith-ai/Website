@@ -4,7 +4,7 @@
 // 4 Padas per Nakshatra, each 3.333°
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { normalize360, formatLocalTime, jdToDate } from '../ephemeris/julian-day'
+import { formatLocalTime, jdToDate } from '../ephemeris/julian-day'
 import { tropicalToSidereal }                       from '../ephemeris/ayanamsha'
 import { moonTropicalLongitude }                    from '../ephemeris/lunar'
 import type { NakshatraResult, AyanamshaKey }       from '../../types/panchanga'
