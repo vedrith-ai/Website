@@ -272,9 +272,39 @@ export const UI_STRINGS: Record<string, TranslationRecord> = {
   'location.keep.previous': { en: 'Keep Previous Location', kn: 'ಹಿಂದಿನ ಸ್ಥಳ ಇರಲಿ' },
   'location.detecting':    { en: 'Detecting your location…', kn: 'ಸ್ಥಳ ಪತ್ತೆ ಮಾಡಲಾಗುತ್ತಿದೆ…' },
   'location.add.favourite': { en: 'Add to Favourites',  kn: 'ಮೆಚ್ಚಿನ ಸ್ಥಳಗಳಿಗೆ ಸೇರಿಸಿ' },
+  // ── Notifications ─────────────────────────────────────────────────────────
+  'notifications.title':      { en: 'Notifications',       kn: 'ಸೂಚನೆಗಳು' },
+  'notifications.all.read':   { en: 'Mark all read',       kn: 'ಎಲ್ಲ ಓದಿದೆ ಎಂದು ಗುರುತಿಸಿ' },
+  'notifications.see.all':    { en: 'See all →',           kn: 'ಎಲ್ಲ ನೋಡಿ →' },
+  'notifications.empty':      { en: 'All caught up!',      kn: 'ಎಲ್ಲ ನೋಡಿದ್ದೀರಿ!' },
+  'notifications.view.all':   { en: 'View all notifications', kn: 'ಎಲ್ಲ ಸೂಚನೆಗಳನ್ನು ನೋಡಿ' },
+
+  // ── Platform ──────────────────────────────────────────────────────────────
+  'platform.live':            { en: 'Available Now',       kn: 'ಈಗ ಲಭ್ಯ' },
+  'platform.coming.soon':     { en: 'Coming Soon',         kn: 'ಶೀಘ್ರದಲ್ಲಿ' },
+  'platform.open':            { en: 'Open module',         kn: 'ತೆರೆಯಿರಿ' },
+
+  // ── Footer ────────────────────────────────────────────────────────────────
+  'footer.platform':          { en: 'Platform',            kn: 'ವೇದಿಕೆ' },
+  'footer.company':           { en: 'Company',             kn: 'ಕಂಪನಿ' },
+  'footer.knowledge':         { en: 'Knowledge',           kn: 'ಜ್ಞಾನ' },
+  'footer.languages':         { en: 'Languages',           kn: 'ಭಾಷೆಗಳು' },
+  'footer.copyright':         { en: 'All rights reserved.', kn: 'ಎಲ್ಲ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.' },
+
+  // ── Search (additional keys) ─────────────────────────────────────────────
+  'search.open':              { en: 'Search',              kn: 'ಹುಡುಕಿ' },
+  'search.results':           { en: 'Results',             kn: 'ಫಲಿತಾಂಶಗಳು' },
+
+  // ── Hero / CTA ────────────────────────────────────────────────────────────
+  'hero.cta':                 { en: 'View Today\'s Panchanga', kn: 'ಇಂದಿನ ಪಂಚಾಂಗ ನೋಡಿ' },
+  'hero.cta.kundali':         { en: 'Generate Kundali',    kn: 'ಕುಂಡಲಿ ತಯಾರಿಸಿ' },
+
+  // ── Breadcrumbs ───────────────────────────────────────────────────────────
+  'breadcrumb.home':          { en: 'Home',                kn: 'ಮನೆ' },
+  'breadcrumb.panchanga':     { en: 'Panchanga',           kn: 'ಪಂಚಾಂಗ' },
+  'breadcrumb.kundali':       { en: 'Kundali',             kn: 'ಕುಂಡಲಿ' },
 }
 
-/** Translate a UI string key, with fallback to English */
 export function getString(key: string, lang: string): string {
   const record = UI_STRINGS[key]
   if (!record) return key

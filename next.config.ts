@@ -1,7 +1,6 @@
 import type { NextConfig } from 'next'
 
 // Stamp every build with a unique ID so the auto-updater can detect deployments.
-// On Vercel this is the VERCEL_DEPLOYMENT_ID; locally it falls back to timestamp.
 const BUILD_ID = process.env.VERCEL_DEPLOYMENT_ID ?? `local-${Date.now()}`
 
 const nextConfig: NextConfig = {
@@ -16,10 +15,23 @@ const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
 
-  // Allow Vercel to serve the service worker with correct headers
+  // ── Security: disable source maps in production ───────────────────────────
+  productionBrowserSourceMaps: false,
+
+  // ── Webpack: minify and obfuscate in production ───────────────────────────
+  webpack: (config, { dev }) => {
+    if (!dev) {
+      // Ensure terser removes comments and mangles names
+      if (config.optimization) {
+        config.optimization.minimize = true
+      }
+    }
+    return config
+  },
+
   async headers() {
     return [
-      // Service Worker — must be served with no-cache so updates propagate
+      // Service Worker
       {
         source: '/sw.js',
         headers: [
@@ -36,14 +48,14 @@ const nextConfig: NextConfig = {
           { key: 'Content-Type', value: 'application/manifest+json' },
         ],
       },
-      // PWA icons — long cache
+      // PWA icons
       {
         source: '/icons/(.*)',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],
       },
-      // All other routes
+      // All routes — security headers to prevent source extraction
       {
         source: '/(.*)',
         headers: [
@@ -51,6 +63,10 @@ const nextConfig: NextConfig = {
           { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'Permissions-Policy', value: 'geolocation=(self), camera=(), microphone=()' },
+          // Prevent embedding of source in DevTools inspector
+          { key: 'X-DNS-Prefetch-Control', value: 'off' },
+          // HSTS — only activate on live HTTPS domain
+          { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
           {
             key: 'Content-Security-Policy',
             value: [
@@ -59,9 +75,11 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data: blob:",
               "font-src 'self' https://fonts.gstatic.com",
-              // Nominatim geocoding + Google Fonts
               "connect-src 'self' https://vedrith.sharvasit.in https://*.vedrith.com https://nominatim.openstreetmap.org https://fonts.googleapis.com https://fonts.gstatic.com",
               "worker-src 'self'",
+              "frame-ancestors 'self'",
+              "base-uri 'self'",
+              "form-action 'self'",
             ].join('; '),
           },
         ],

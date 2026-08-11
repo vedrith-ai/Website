@@ -1,0 +1,18 @@
+
+# Environment variables — NEVER commit these
+.env
+.env.local
+.env.*.local
+
+# .env.example SHOULD be committed (no secrets, just variable names)
+!.env.example
+
+# Source maps (never deploy)
+*.map
+
+# Build artifacts
+.next/
+out/
+
+# Dependencies
+node_modules/

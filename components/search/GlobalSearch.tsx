@@ -137,3 +137,6 @@ function SearchModal({ onClose }: { onClose:()=>void }) {
     </div>
   )
 }
+
+// ── Alias for Header import compatibility ────────────────────────────────────
+export { SearchModal as GlobalSearch }

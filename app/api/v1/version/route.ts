@@ -10,7 +10,7 @@ export const runtime = 'edge'
 export const dynamic = 'force-dynamic'
 
 const BUILD_ID = process.env.NEXT_PUBLIC_BUILD_ID ?? 'dev'
-const VERSION  = '1.0.0'
+const VERSION  = '1.0.0-rc1'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function GET(_req: NextRequest) {

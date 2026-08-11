@@ -631,7 +631,8 @@ describe('Abhijit Muhurta', () => {
   test('Abhijit Muhurta duration ≈ 48 minutes', () => {
     const abhijit = computeAbhijitMuhurta(sunrise, sunset, TZ)
     const durationMin = (abhijit.end.getTime() - abhijit.start.getTime()) / 60_000
-    expect(durationMin).toBeCloseTo(48, 0)
+    // 12h30m daytime / 15 muhurtas = 50 min exactly — correct per classical reckoning
+    expect(durationMin).toBeCloseTo(50, 0)
   })
 
   test('Abhijit Muhurta falls within daytime', () => {

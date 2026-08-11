@@ -91,12 +91,6 @@ export const metadata: Metadata = {
     ],
   },
   manifest: '/manifest.webmanifest',
-  alternates: {
-    canonical: SITE.url,
-    // Note: Language switching is UI-based via a query param (?lang=kn).
-    // Separate routes (/en, /kn) do not exist; hreflang tags use root URL.
-    languages: { 'en-IN': SITE.url, 'kn-IN': SITE.url },
-  },
   category:   'Spirituality',
   appleWebApp: {
     capable:          true,
@@ -148,6 +142,12 @@ const mobileAppSchema = {
 // Root Layout
 // ─────────────────────────────────────────────────────────────────────────────
 
+
+// ── Inline lang-init: sets <html lang> from localStorage before hydration ────
+
+// ── Lang init: sets <html lang> from localStorage before first paint ─────────
+const LangInitScript = "(function(){try{var p=localStorage.getItem('vedrith_preferences');if(p){var l=JSON.parse(p).lang;if(l&&['en','kn'].indexOf(l)!==-1)document.documentElement.lang=l;}}catch(e){}})()"
+
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html
@@ -156,6 +156,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
     >
       <head>
         {/* Google Fonts preconnect — speeds up runtime font loading */}
+        <script dangerouslySetInnerHTML={{ __html: LangInitScript }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
 

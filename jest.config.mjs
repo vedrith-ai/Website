@@ -1,6 +1,5 @@
-import type { Config } from 'jest'
-
-const config: Config = {
+/** @type {import('jest').Config} */
+const config = {
   testEnvironment: 'node',
   transform: {
     '^.+\\.tsx?$': ['ts-jest', { tsconfig: { strict: false } }],
@@ -8,11 +7,12 @@ const config: Config = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
-  testMatch: ['**/tests/unit/**/*.test.ts'],
+  testMatch: ['**/tests/**/*.test.ts', '**/tests/**/*.test.tsx'],
+  passWithNoTests: true,
   collectCoverageFrom: [
     'lib/engines/**/*.ts',
     'lib/validators/**/*.ts',
-    '!lib/engines/**/*.d.ts',
+    '!**/*.d.ts',
   ],
 }
 

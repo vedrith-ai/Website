@@ -1,4 +1,6 @@
+'use client'
 import Link from 'next/link'
+import { useTranslation } from '@/lib/i18n'
 import SectionHeader from '@/components/ui/SectionHeader'
 import { FEATURES, type Feature, type FeatureTier } from '@/lib/constants'
 
@@ -6,9 +8,7 @@ import { FEATURES, type Feature, type FeatureTier } from '@/lib/constants'
 // Tier badge colours
 // ─────────────────────────────────────────────────────────────────────────────
 const TIER_STYLES: Record<FeatureTier, string> = {
-  Free:    'bg-navy-700/60 text-cream-200/70 border border-white/10',
-  PRO:     'bg-gold-500/15 text-gold-400 border border-gold-500/30',
-  Premium: 'bg-gold-500/10 text-gold-300 border border-gold-400/25',
+  Free: 'bg-navy-700/60 text-cream-200/70 border border-white/10',
 }
 
 // All keys must exactly match Feature['status'] = 'soon' | 'planned' | 'future'
@@ -48,6 +48,8 @@ function FeatureIcon({ path }: { path: string }) {
 // Individual feature card
 // ─────────────────────────────────────────────────────────────────────────────
 function FeatureCard({ feature }: { feature: Feature }) {
+  const { lang: rawLang } = useTranslation()
+  const lang = rawLang === 'kn' ? 'kn' : 'en'
   // Dim only far-future planned features
   const isDimmed = feature.status === 'planned' || feature.status === 'future'
 
@@ -66,7 +68,7 @@ function FeatureCard({ feature }: { feature: Feature }) {
             ${TIER_STYLES[feature.tier]}
           `}
         >
-          {feature.tier}
+          {lang === 'kn' ? 'ಉಚಿತ' : 'Free'}
         </span>
         <span className={`
           font-sans text-[0.6rem] tracking-[0.15em] uppercase
@@ -105,6 +107,7 @@ function FeatureCard({ feature }: { feature: Feature }) {
 // Section
 // ─────────────────────────────────────────────────────────────────────────────
 export default function FeaturesSection() {
+  const { lang } = useTranslation()
   return (
     <section
       id="features"
@@ -124,9 +127,9 @@ export default function FeaturesSection() {
 
         <SectionHeader
           light
-          eyebrow="Everything You Need"
-          title="Complete Vedic Wisdom"
-          titleItalic="In One Platform"
+          eyebrow={lang === 'kn' ? 'ಎಲ್ಲವೂ ಇಲ್ಲಿದೆ' : 'Everything You Need'}
+          title={lang === 'kn' ? 'ಸಂಪೂರ್ಣ ವೈದಿಕ ಜ್ಞಾನ' : 'Complete Vedic Wisdom'}
+          titleItalic={lang === 'kn' ? 'ಒಂದೇ ವೇದಿಕೆಯಲ್ಲಿ' : 'In One Platform'}
           subtitle="From daily Panchanga to full Kundali charts, Muhurta timing, Temple Directory, and a self-explaining Knowledge Base — VedRith covers the complete spectrum of Vedic spiritual life."
         />
 
@@ -152,7 +155,6 @@ export default function FeaturesSection() {
 
         {/* Bottom note */}
         <p className="font-sans text-[0.7rem] tracking-[0.15em] uppercase text-cream-100/25 text-center mt-14">
-          Free tier available at launch &nbsp;·&nbsp; PRO &amp; Premium via Razorpay
         </p>
       </div>
 

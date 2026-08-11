@@ -368,5 +368,8 @@ export const NAKSHATRA_KNOWLEDGE: Record<string, NakshatraKnowledge> = {
 }
 
 export function getNakshatraKnowledge(key: string): NakshatraKnowledge | null {
-  return NAKSHATRA_KNOWLEDGE[key] ?? null
+  // Try exact match first, then try with spaces removed (handles 'Purva Phalguni' → 'PurvaPhalguni')
+  if (NAKSHATRA_KNOWLEDGE[key]) return NAKSHATRA_KNOWLEDGE[key]
+  const normalized = key.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('')
+  return NAKSHATRA_KNOWLEDGE[normalized] ?? null
 }

@@ -16,8 +16,8 @@
 // Midnight reset: Panchanga cache invalidated when the calendar date changes.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const APP_VERSION     = '1.0.0'
-const CACHE_VERSION   = 'vedrith-v1.0'
+const APP_VERSION     = 'RC1'
+const CACHE_VERSION   = 'vedrith-rc1'
 const STATIC_CACHE    = `${CACHE_VERSION}-static`
 const PAGE_CACHE      = `${CACHE_VERSION}-pages`
 const PANCHANGA_CACHE = `${CACHE_VERSION}-panchanga`
