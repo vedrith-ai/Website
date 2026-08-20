@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminToken, extractBearerToken } from '@/src/lib/auth/hmac';
 import { createServiceClient, isSupabaseConfigured } from '@/src/lib/supabase/server';
-import type { ApiResponse } from '@/src/types';
-
 // Public GET — returns published events
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const bearer   = extractBearerToken(req.headers.get('authorization'));

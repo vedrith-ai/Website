@@ -4,8 +4,8 @@
  * Uses mean planetary longitudes with simplified but accurate corrections.
  */
 
-import type { PanchangaRequest, PanchangaResponse, Region } from '@/src/types';
-import { toJulianDay, parseDate, formatTime, addMinutes } from '@/src/lib/utils/date';
+import type { PanchangaRequest, PanchangaResponse } from '@/src/types';
+import { toJulianDay, parseDate } from '@/src/lib/utils/date';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -126,7 +126,7 @@ export function calcVara(jd: number, timezone: string): { vara: string; varaInde
 export function calcTithi(jd: number): { tithi: string; tithiIndex: number; tithiPaksha: 'shukla' | 'krishna' } {
   const sun  = siderealSolar(jd);
   const moon = siderealLunar(jd);
-  let elong  = normalize360(moon - sun);
+  const elong  = normalize360(moon - sun);
   const rawIdx    = Math.floor(elong / TITHI_SPAN);
   const tithiIndex = (rawIdx % 30) + 1; // 1-30
   const paksha    = tithiIndex <= 15 ? 'shukla' : 'krishna';
@@ -175,7 +175,7 @@ export function calcKarana(jd: number): { karana: string; karanaIndex: number } 
 
 // ─── Sunrise / Sunset (Meeus simplified) ─────────────────────────────────────
 
-function calcSunEvents(jd: number, lat: number, lon: number, timezone: string): {
+function calcSunEvents(jd: number, lat: number, lon: number, _timezone: string): {
   sunrise: string; sunset: string; transitJd: number
 } {
   const T    = (jd - 2451545.0) / 36525;
@@ -370,7 +370,6 @@ export function calculatePanchanga(req: PanchangaRequest): PanchangaResponse {
   const gulikakalam = { start: toHHMM(rahuStart + 1.5), end: toHHMM(rahuStart + 3) };
 
   const auspiciousYogaNames = ['siddha','siddhi','shubha','shiva','brahma','vriddhi','dhruva','priti','saubhagya'];
-  const inauspiciousYogaNames = ['vishkumbha','atiganda','shula','ganda','vyaghata','vajra','vyatipata','parigha','vaidhriti'];
   const auspiciousYoga = auspiciousYogaNames.includes(yoga);
 
   return {

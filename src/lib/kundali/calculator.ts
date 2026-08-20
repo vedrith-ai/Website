@@ -69,7 +69,7 @@ function moonLongitude(T: number): number {
   const L0 = 218.3164477 + 481267.88123421 * T;
   const Mp = 134.9633964 + 477198.8675055 * T;
   const D  = 297.8501921 + 445267.1114034 * T;
-  const F  = 93.2720950  + 483202.0175233 * T;
+  const _F = 93.2720950  + 483202.0175233 * T; // reserved for latitude correction
   const correction =
     6.288774 * Math.sin(Mp*Math.PI/180) +
     1.274027 * Math.sin((2*D - Mp)*Math.PI/180) +
@@ -126,7 +126,7 @@ function getDignity(
 
 // ─── Dasha balance ────────────────────────────────────────────────────────────
 
-function calcDashaBalance(moonLong: number, jd: number): { planet: string; yearsRemaining: number } {
+function calcDashaBalance(moonLong: number, _jd: number): { planet: string; yearsRemaining: number } {
   const nakshatraIdx = Math.floor(moonLong / (360/27));
   const dashaLord    = DASHA_SEQUENCE[nakshatraIdx % 9];
   const dashaYears   = DASHA_YEARS[dashaLord];

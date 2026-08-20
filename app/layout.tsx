@@ -1,10 +1,21 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Noto_Sans_Kannada } from 'next/font/google';
 import { LangProvider }     from '@/components/providers/LangProvider';
 import { LocationProvider } from '@/components/providers/LocationProvider';
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display:  'swap',
+});
+
+const notoKannada = Noto_Sans_Kannada({
+  subsets:  ['kannada'],
+  weight:   ['400', '500', '600', '700'],
+  variable: '--font-noto-kannada',
+  display:  'swap',
+});
 
 export const metadata: Metadata = {
   title:       { default: 'VedRith — Vedic Astrology & Panchanga', template: '%s | VedRith' },
@@ -32,15 +43,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className={`${inter.variable} min-h-screen`}>
+      <body className={`${inter.variable} ${notoKannada.variable} min-h-screen`}>
         <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground">
           Skip to main content
         </a>
