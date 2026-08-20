@@ -1,195 +1,56 @@
-import type { Metadata, Viewport } from 'next'
-import type { ReactNode } from 'react'
-import './globals.css'
-import { SITE } from '@/lib/constants'
-import { ServiceWorkerRegistration } from '@/components/pwa/ServiceWorkerRegistration'
-import { InstallPrompt } from '@/components/pwa/InstallPrompt'
-import { I18nProvider } from '@/lib/i18n/index'
+import type { Metadata, Viewport } from 'next';
+import { Inter } from 'next/font/google';
+import { LangProvider }     from '@/components/providers/LangProvider';
+import { LocationProvider } from '@/components/providers/LocationProvider';
+import './globals.css';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Fonts — loaded via CSS @import in globals.css (runtime, not build-time).
-// CSS variables are defined there; Tailwind picks them up via tailwind.config.ts
-// (font-serif → var(--font-cormorant), font-sans → var(--font-lato)).
-// ─────────────────────────────────────────────────────────────────────────────
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Viewport — PWA theme colour updated to gold
-// ─────────────────────────────────────────────────────────────────────────────
-
-export const viewport: Viewport = {
-  themeColor: [
-    { media: '(prefers-color-scheme: dark)',  color: '#0a0f1e' },
-    { media: '(prefers-color-scheme: light)', color: '#d4af37' },
-  ],
-  colorScheme:         'dark light',
-  width:               'device-width',
-  initialScale:        1,
-  maximumScale:        5,
-  viewportFit:         'cover',
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Metadata — enhanced for PWA + SEO
-// ─────────────────────────────────────────────────────────────────────────────
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(SITE.url),
-  title: {
-    default:  `${SITE.name} — ${SITE.tagline}`,
-    template: `%s | ${SITE.name}`,
-  },
-  description: SITE.description,
-  keywords: [
-    'Vedic astrology', 'Panchanga', 'Kannada Panchanga', 'Kundali', 'Muhurta',
-    'Jyotisha', 'Indian astrology', 'Hindu calendar', 'Nakshatra', 'Tithi',
-    'Rashi', 'Rahu Kalam', 'Abhijit Muhurta', 'Auspicious timing', 'Samvatsara',
-    'ಪಂಚಾಂಗ', 'ಕುಂಡಲಿ', 'ಮುಹೂರ್ತ', 'ನಕ್ಷತ್ರ', 'ತಿಥಿ',
-  ],
-  authors:   [{ name: "Sharva's IT", url: SITE.url }],
-  creator:   "Sharva's IT",
-  publisher: 'VedRith',
-  robots: {
-    index:  true,
-    follow: true,
-    googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 },
-  },
+  title:       { default: 'VedRith — Vedic Astrology & Panchanga', template: '%s | VedRith' },
+  description: "Daily Panchanga, Kundali birth charts, Muhurta, Nakshatras and Vedic calendar in English and Kannada. By Sharva's IT.",
+  keywords:    ['Panchanga','Kundali','Vedic Astrology','Nakshatra','Muhurta','Kannada','ಪಂಚಾಂಗ'],
+  authors:     [{ name: "Sharva's IT", url: 'https://vedrith.sharvasit.in' }],
+  metadataBase: new URL('https://vedrith.sharvasit.in'),
   openGraph: {
-    type:        'website',
-    locale:      'kn_IN',
-    alternateLocale: ['en_IN'],
-    url:         SITE.url,
-    siteName:    SITE.name,
-    title:       `${SITE.name} — ${SITE.tagline}`,
-    description: SITE.description,
-    images: [{
-      url:    '/images/logo-full.png',
-      width:  1080,
-      height: 1080,
-      alt:    'VedRith — The Rhythm of Vedic Wisdom',
-    }],
+    type: 'website', locale: 'en_IN', url: 'https://vedrith.sharvasit.in',
+    siteName: 'VedRith', title: 'VedRith — Vedic Astrology & Panchanga',
+    description: 'Daily Panchanga, Kundali and Muhurta in English & Kannada.',
+    images: [{ url: '/icons/og-image.png', width: 1200, height: 630 }],
   },
-  twitter: {
-    card:        'summary_large_image',
-    site:        SITE.twitter,
-    creator:     SITE.twitter,
-    title:       `${SITE.name} — ${SITE.tagline}`,
-    description: SITE.description,
-    images:      ['/images/logo-full.png'],
-  },
+  manifest: '/manifest.json',
   icons: {
-    icon:    [
-      { url: '/icons/icon-32x32.png',  sizes: '32x32',  type: 'image/png' },
-      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
-    ],
-    shortcut: '/icons/icon-192x192.png',
-    apple:   [
-      { url: '/icons/icon-152x152.png', sizes: '152x152', type: 'image/png' },
-      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
-    ],
-    other: [
-      { rel: 'mask-icon', url: '/images/logo-circular.png', color: '#d4af37' },
-    ],
+    icon:  [{ url: '/icons/icon-192.png', sizes: '192x192' }],
+    apple: [{ url: '/icons/apple-touch-icon.png', sizes: '180x180' }],
   },
-  manifest: '/manifest.webmanifest',
-  category:   'Spirituality',
-  appleWebApp: {
-    capable:          true,
-    statusBarStyle:   'black-translucent',
-    title:            'VedRith',
-    startupImage:     '/icons/icon-512x512.png',
-  },
-  formatDetection: { telephone: false, email: false, address: false },
-}
+};
 
-// ─────────────────────────────────────────────────────────────────────────────
-// JSON-LD — WebSite schema for Google rich results
-// ─────────────────────────────────────────────────────────────────────────────
+export const viewport: Viewport = {
+  themeColor: '#f56e15', width: 'device-width', initialScale: 1, viewportFit: 'cover',
+};
 
-const websiteSchema = {
-  '@context':    'https://schema.org',
-  '@type':       'WebSite',
-  name:          SITE.name,
-  url:           SITE.url,
-  description:   SITE.description,
-  inLanguage:    ['kn', 'en'],
-  potentialAction: {
-    '@type':       'SearchAction',
-    target:        { '@type': 'EntryPoint', urlTemplate: `${SITE.url}/panchanga?date={date}` },
-    'query-input': 'required name=date',
-  },
-  publisher: {
-    '@type': 'Organization',
-    name:    "Sharva's IT",
-    url:     SITE.url,
-    logo:    { '@type': 'ImageObject', url: `${SITE.url}/images/logo-full.png` },
-  },
-}
-
-const mobileAppSchema = {
-  '@context':        'https://schema.org',
-  '@type':           'MobileApplication',
-  name:              SITE.name,
-  description:       SITE.description,
-  url:               SITE.url,
-  applicationCategory: 'LifestyleApplication',
-  operatingSystem:   'Any',
-  offers: { '@type': 'Offer', price: '0', priceCurrency: 'INR' },
-  inLanguage:        ['kn', 'en'],
-  screenshot:        `${SITE.url}/images/logo-full.png`,
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Root Layout
-// ─────────────────────────────────────────────────────────────────────────────
-
-
-// ── Inline lang-init: sets <html lang> from localStorage before hydration ────
-
-// ── Lang init: sets <html lang> from localStorage before first paint ─────────
-const LangInitScript = "(function(){try{var p=localStorage.getItem('vedrith_preferences');if(p){var l=JSON.parse(p).lang;if(l&&['en','kn'].indexOf(l)!==-1)document.documentElement.lang=l;}}catch(e){}})()"
-
-export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="kn"
-      className="vedrith-fonts"
-    >
+    <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Google Fonts preconnect — speeds up runtime font loading */}
-        <script dangerouslySetInnerHTML={{ __html: LangInitScript }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-
-        {/* PWA Meta tags */}
-        <meta name="application-name"       content="VedRith" />
-        <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-capable"          content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title"            content="VedRith" />
-        <meta name="msapplication-TileColor"               content="#0a0f1e" />
-        <meta name="msapplication-tap-highlight"           content="no" />
-
-        {/* JSON-LD structured data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(mobileAppSchema) }}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
         />
       </head>
-      <body className="font-sans antialiased">
-        <I18nProvider defaultLang="kn">
-          {children}
-        </I18nProvider>
-
-        {/* PWA: Service Worker registration — client-only, renders nothing */}
-        <ServiceWorkerRegistration />
-
-        {/* PWA: Non-intrusive install prompt */}
-        <InstallPrompt />
+      <body className={`${inter.variable} min-h-screen`}>
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground">
+          Skip to main content
+        </a>
+        {/* LangProvider and LocationProvider wrap the entire app */}
+        <LangProvider>
+          <LocationProvider>
+            {children}
+          </LocationProvider>
+        </LangProvider>
       </body>
     </html>
-  )
+  );
 }

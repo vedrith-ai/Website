@@ -1,80 +1,76 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// POST /api/v1/contact
-// Real server-side contact/enquiry endpoint with validation.
-// Stores to Supabase when configured, otherwise logs + returns direct-email fallback.
-// ─────────────────────────────────────────────────────────────────────────────
-import { NextRequest, NextResponse } from 'next/server'
-import { z }                          from 'zod'
-import { rateLimit }                  from '@/lib/security/rate-limit'
-import { isSupabaseConfigured, getSupabaseAdminClient } from '@/lib/supabase/admin'
+import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+import { createServiceClient, isSupabaseConfigured } from '@/src/lib/supabase/server';
+import type { ApiResponse } from '@/src/types';
 
-export const dynamic = 'force-dynamic'
+const schema = z.object({
+  name:    z.string().min(1).max(100),
+  email:   z.string().email(),
+  subject: z.string().min(1).max(200),
+  message: z.string().min(10).max(5000),
+});
 
-const ContactSchema = z.object({
-  name:    z.string().min(1, 'Name is required').max(100).trim(),
-  email:   z.string().email('Valid email required').max(200).toLowerCase().trim(),
-  subject: z.string().max(100).trim().default('general'),
-  message: z.string().min(10, 'Message must be at least 10 characters').max(2000).trim(),
-})
-
-export async function POST(req: NextRequest) {
-  // Rate limit: 5 submissions per 10 minutes per IP
-  const rl = rateLimit(req, { limit: 5, window: 600 })
-  if (rl) return rl
-
-  let body: unknown
-  try { body = await req.json() }
-  catch { return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 }) }
-
-  const parsed = ContactSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: 'Validation failed.', details: parsed.error.flatten().fieldErrors },
-      { status: 422 },
-    )
-  }
-
-  const { name, email, subject, message } = parsed.data
-
-  // Spam signals: ignore but don't reveal
-  const spamSignals = [
-    message.length < 10,
-    /http[s]?:\/\//i.test(message) && message.split('http').length > 3,
-    /\b(casino|crypto|bitcoin|loan|pills|viagra)\b/i.test(message),
-  ]
-  if (spamSignals.filter(Boolean).length >= 2) {
-    // Return 200 to avoid enumeration but do not store
-    return NextResponse.json({ ok: true, ref: 'VR-' + Date.now().toString(36).toUpperCase() })
-  }
-
-  const ref = 'VR-' + Date.now().toString(36).toUpperCase()
-
-  if (isSupabaseConfigured()) {
-    try {
-      const admin = getSupabaseAdminClient()
-      await admin.from('contact_enquiries').insert({
-        ref,
-        name,
-        email,
-        subject,
-        message,
-        submitted_at: new Date().toISOString(),
-        ip_hash:      hashIP(req.headers.get('x-forwarded-for') ?? 'unknown'),
-      })
-    } catch (err) {
-      // Log and fall through — don't fail the user if DB is down
-      console.error('[VedRith] Contact insert failed:', err)
+export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse<{ id: string }>>> {
+  try {
+    const body   = await req.json();
+    const parsed = schema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid request data', code: 'VALIDATION_ERROR' },
+        { status: 400 }
+      );
     }
-  } else {
-    // Development/no-Supabase: structured log only
-    console.info('[VedRith] Contact enquiry received:', { ref, name, email, subject, ts: new Date().toISOString() })
+
+    const isProd = process.env.NODE_ENV === 'production';
+
+    if (!isSupabaseConfigured()) {
+      if (!isProd) {
+        // Development: log and return success so devs can test forms
+        console.warn('[contact] Supabase not configured — dev mode, logging only:', parsed.data);
+        return NextResponse.json({ success: true, data: { id: 'dev-' + Date.now() } });
+      }
+      // Production: Supabase is required
+      return NextResponse.json(
+        { success: false, error: 'Message service unavailable', code: 'SERVICE_UNAVAILABLE' },
+        { status: 503 }
+      );
+    }
+
+    const supabase = createServiceClient();
+    if (!supabase) {
+      return NextResponse.json(
+        { success: false, error: 'Database connection failed', code: 'DB_ERROR' },
+        { status: 503 }
+      );
+    }
+
+    const { data, error } = await supabase
+      .from('contact_messages')
+      .insert({
+        name:    parsed.data.name,
+        email:   parsed.data.email,
+        subject: parsed.data.subject,
+        message: parsed.data.message,
+        created_at: new Date().toISOString(),
+        status: 'new',
+      })
+      .select('id')
+      .single();
+
+    if (error) {
+      console.error('[contact] Supabase insert error:', error);
+      return NextResponse.json(
+        { success: false, error: 'Failed to save message', code: 'DB_INSERT_ERROR' },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ success: true, data: { id: data.id } });
+  } catch (err) {
+    console.error('[contact/route]', err);
+    return NextResponse.json(
+      { success: false, error: 'Server error', code: 'INTERNAL_ERROR' },
+      { status: 500 }
+    );
   }
-
-  return NextResponse.json({ ok: true, ref })
-}
-
-function hashIP(ip: string): string {
-  let h = 5381
-  for (let i = 0; i < ip.length; i++) h = ((h << 5) + h + ip.charCodeAt(i)) | 0
-  return Math.abs(h).toString(36)
 }

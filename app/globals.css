@@ -1,422 +1,77 @@
-/* ─────────────────────────────────────────────────────────────────────────────
-   Google Fonts — loaded at browser runtime (not Next.js build time).
-   Preconnect hint is in layout.tsx <head>.
-   ───────────────────────────────────────────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Lato:wght@300;400;700&family=Noto+Sans+Kannada:wght@400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   Font CSS Variables — set on .vedrith-fonts (applied to <html>).
-   Tailwind maps font-serif → var(--font-cormorant), font-sans → var(--font-lato).
-   Fallback stacks ensure text is always readable even before fonts load.
-   ───────────────────────────────────────────────────────────────────────────── */
-.vedrith-fonts {
-  --font-cormorant: 'Cormorant Garamond', 'Palatino Linotype', Georgia, serif;
-  --font-lato:      'Lato', 'Helvetica Neue', Arial, sans-serif;
-  --font-kannada:   'Noto Sans Kannada', 'Kannada Sangam MN', sans-serif;
+@layer base {
+  :root {
+    --background: 40 50% 98%;
+    --foreground: 20 14% 10%;
+    --card: 40 50% 96%;
+    --card-foreground: 20 14% 10%;
+    --primary: 30 90% 48%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 30 20% 90%;
+    --secondary-foreground: 20 14% 10%;
+    --muted: 30 20% 93%;
+    --muted-foreground: 20 10% 40%;
+    --accent: 30 60% 88%;
+    --accent-foreground: 20 14% 10%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 30 20% 88%;
+    --input: 30 20% 88%;
+    --ring: 30 90% 48%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 20 14% 5%;
+    --foreground: 40 30% 92%;
+    --card: 20 14% 8%;
+    --card-foreground: 40 30% 92%;
+    --primary: 30 90% 55%;
+    --primary-foreground: 20 14% 5%;
+    --secondary: 20 14% 14%;
+    --secondary-foreground: 40 30% 92%;
+    --muted: 20 14% 12%;
+    --muted-foreground: 30 10% 55%;
+    --accent: 20 20% 18%;
+    --accent-foreground: 40 30% 92%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 20 14% 18%;
+    --input: 20 14% 18%;
+    --ring: 30 90% 55%;
+  }
 }
 
-/* Kannada text utility */
-.font-kannada {
-  font-family: var(--font-kannada);
+@layer base {
+  * { @apply border-border; }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+  .font-kannada {
+    font-family: var(--font-noto-kannada), 'Noto Sans Kannada', sans-serif;
+  }
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   CSS Custom Properties — VedRith Design Tokens
-   ───────────────────────────────────────────────────────────────────────────── */
-:root {
-  /* ── Brand colours (hex, for direct var() usage) ──────────────────────── */
-  --navy:       #1B2A4A;
-  --gold:       #C9A052;
-  --gold-light: #E8C97A;
-  --gold-dark:  #A07830;
-  --cream:      #F8F3EC;
-  --cream-dark: #F0E6D3;
-
-  /* ── Semantic colour tokens — RGB channel triplets (R G B, no commas).   ──
-     Used by Tailwind classes such as bg-background, text-foreground, etc.
-     The rgb(var(--x) / <alpha>) pattern in tailwind.config.ts picks these up
-     so opacity modifiers (bg-background/95, bg-muted/30) work correctly.
-
-     Light-theme defaults match the cream landing-page background.         ── */
-  --background:        248 243 236;   /* cream   — #F8F3EC */
-  --foreground:         27  42  74;   /* navy    — #1B2A4A */
-  --muted:             224 214 198;   /* cream-200 approx */
-  --muted-foreground:  100 115 143;   /* navy-400 approx  */
-  --border:             27  42  74;   /* navy (used at low opacity) */
-  --ring:              201 160  82;   /* gold-500 — #C9A052 */
-  --card:              253 251 248;   /* cream-50 — #FDFBF8 */
-  --card-foreground:    27  42  74;
-  --popover:           253 251 248;
-  --popover-foreground: 27  42  74;
+/* PWA safe area */
+@supports (padding: env(safe-area-inset-top)) {
+  .safe-top    { padding-top: env(safe-area-inset-top); }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
 }
 
-/* ── Dark-theme override — applied to all dark-bg pages via a wrapper class.
-   The functional pages (Panchanga, Kundali, Dashboard) use bg-navy-950 as
-   their outer container.  Adding .dark to <html> or any ancestor switches
-   the entire token set to the navy palette.
-   The app currently renders dark pages without adding a .dark class, so we
-   add the override directly on the body children that carry bg-navy-950/900.
-   A simpler, bullet-proof approach is to declare the tokens in :root that
-   match what the dark pages actually need — since the landing page uses its
-   own explicit colour classes (navy-900, gold-500, cream-100) and does NOT
-   rely on the semantic tokens, and the functional pages DO rely on them with
-   dark expectations, we set :root to dark values and let the landing page
-   continue to use its explicit colour classes.                             ── */
-
-/* Override :root tokens to dark values — functional pages are primary       */
-:root {
-  --background:        13  21  37;   /* navy-950 — #0D1525 */
-  --foreground:       248 243 236;   /* cream    — #F8F3EC */
-  --muted:             27  42  74;   /* navy-900 — #1B2A4A */
-  --muted-foreground: 248 243 236;   /* cream (muted via opacity) */
-  --border:           255 255 255;   /* white    (used at 0.06–0.20 opacity) */
-  --ring:             201 160  82;   /* gold-500 — #C9A052 */
-  --card:              27  42  74;   /* navy-900 — #1B2A4A */
-  --card-foreground:  248 243 236;
-  --popover:           13  21  37;   /* navy-950 */
-  --popover-foreground: 248 243 236;
+/* Saffron gradient */
+.gradient-saffron {
+  background: linear-gradient(135deg, #f56e15 0%, #C9A84C 50%, #f56e15 100%);
+}
+.gradient-vedic {
+  background: linear-gradient(135deg, #800000 0%, #C9A84C 100%);
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   Base Resets & Global Styles
-   ───────────────────────────────────────────────────────────────────────────── */
-html {
-  scroll-behavior: smooth;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-body {
-  background-color: var(--cream);
-  color: var(--navy);
-  overflow-x: hidden;
-}
-
-::selection {
-  background-color: rgba(201, 160, 82, 0.25);
-  color: var(--navy);
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   Custom Scrollbar
-   ───────────────────────────────────────────────────────────────────────────── */
-::-webkit-scrollbar       { width: 5px; }
-::-webkit-scrollbar-track { background: var(--cream); }
-::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--gold-light); }
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   Gold Shimmer Text Utility
-   ───────────────────────────────────────────────────────────────────────────── */
-.text-shimmer {
-  background: linear-gradient(
-    90deg,
-    #A07830 0%,
-    #C9A052 20%,
-    #E8C97A 40%,
-    #C9A052 60%,
-    #E8C97A 80%,
-    #C9A052 100%
-  );
-  background-size: 400% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: shimmer 3.5s linear infinite;
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   Section Transition Overlay (cream-to-navy, navy-to-cream)
-   ───────────────────────────────────────────────────────────────────────────── */
-.section-wave-bottom {
-  position: relative;
-}
-.section-wave-bottom::after {
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  right: 0;
-  height: 80px;
-  background: inherit;
-  clip-path: ellipse(55% 100% at 50% 0%);
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   Ornamental Horizontal Rule
-   ───────────────────────────────────────────────────────────────────────────── */
-.ornament-rule {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-.ornament-rule::before,
-.ornament-rule::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(
-    to var(--direction, right),
-    transparent,
-    rgba(201, 160, 82, 0.6),
-    transparent
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   Hero Background — sacred geometry
-   ───────────────────────────────────────────────────────────────────────────── */
-.hero-bg {
-  background-color: var(--cream);
-  background-image:
-    radial-gradient(ellipse 70% 55% at 50% 42%, rgba(201, 160, 82, 0.10) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 30% at 20% 80%, rgba(27, 42, 74, 0.03) 0%, transparent 50%),
-    radial-gradient(ellipse 30% 25% at 80% 15%, rgba(201, 160, 82, 0.05) 0%, transparent 50%);
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   Mandala / Yantra Rings — decorative concentric circles
-   ───────────────────────────────────────────────────────────────────────────── */
-.mandala-ring {
-  position: absolute;
-  border-radius: 50%;
-  border: 1px solid rgba(201, 160, 82, 0.18);
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   Feature Card — Dark navy cards with gold hover
-   ───────────────────────────────────────────────────────────────────────────── */
-.feature-card {
-  position: relative;
-  background: rgba(15, 22, 38, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  transition: border-color 0.35s ease, transform 0.35s ease, box-shadow 0.35s ease;
-  overflow: hidden;
-}
-.feature-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(201, 160, 82, 0.04) 0%, transparent 60%);
-  opacity: 0;
-  transition: opacity 0.35s ease;
-}
-.feature-card:hover {
-  border-color: rgba(201, 160, 82, 0.45);
-  transform: translateY(-4px);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.30), 0 0 0 1px rgba(201, 160, 82, 0.15);
-}
-.feature-card:hover::before {
-  opacity: 1;
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   Roadmap milestone card
-   ───────────────────────────────────────────────────────────────────────────── */
-.milestone-card {
-  position: relative;
-  transition: transform 0.3s ease;
-}
-.milestone-card:hover {
-  transform: translateY(-3px);
-}
-.milestone-card.is-active::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  background: linear-gradient(135deg, rgba(201, 160, 82, 0.3), transparent 60%);
-  z-index: -1;
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   FAQ Accordion
-   ───────────────────────────────────────────────────────────────────────────── */
-.faq-answer {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.faq-answer.open {
-  max-height: 400px;
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   Input & Textarea focus ring — gold
-   ───────────────────────────────────────────────────────────────────────────── */
-.vedrith-input {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #F8F3EC;
-  outline: none;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  width: 100%;
-  padding: 0.875rem 1rem;
-  font-family: var(--font-lato), sans-serif;
-  font-size: 0.9375rem;
-}
-.vedrith-input::placeholder {
-  color: rgba(248, 243, 236, 0.35);
-}
-.vedrith-input:focus {
-  border-color: rgba(201, 160, 82, 0.65);
-  box-shadow: 0 0 0 3px rgba(201, 160, 82, 0.12);
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   Button — Primary gold
-   ───────────────────────────────────────────────────────────────────────────── */
-.btn-gold {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--gold);
-  color: var(--navy);
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  font-size: 0.8125rem;
-  padding: 1rem 2.5rem;
-  border: 2px solid var(--gold);
-  transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-.btn-gold::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.18) 50%, transparent 70%);
-  transform: translateX(-100%);
-  transition: transform 0.5s ease;
-}
-.btn-gold:hover::before {
-  transform: translateX(100%);
-}
-.btn-gold:hover {
-  background: var(--gold-light);
-  border-color: var(--gold-light);
-  box-shadow: 0 8px 32px rgba(201, 160, 82, 0.35);
-  transform: translateY(-2px);
-}
-
-/* Button — Ghost outline */
-.btn-ghost {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  color: var(--navy);
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  font-size: 0.8125rem;
-  padding: 1rem 2.5rem;
-  border: 1.5px solid rgba(27, 42, 74, 0.45);
-  transition: border-color 0.3s ease, color 0.3s ease;
-}
-.btn-ghost:hover {
-  border-color: var(--gold);
-  color: var(--gold-dark);
-}
-
-/* Button — Ghost light (on dark background) */
-.btn-ghost-light {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  color: var(--cream);
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  font-size: 0.8125rem;
-  padding: 1rem 2.5rem;
-  border: 1.5px solid rgba(248, 243, 236, 0.30);
-  transition: border-color 0.3s ease, color 0.3s ease;
-}
-.btn-ghost-light:hover {
-  border-color: var(--gold);
-  color: var(--gold);
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   Keyframe Animations
-   ───────────────────────────────────────────────────────────────────────────── */
-@keyframes shimmer {
-  0%   { background-position: -400% center; }
-  100% { background-position:  400% center; }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-14px); }
-}
-
-@keyframes spin-slow {
-  from { transform: translate(-50%, -50%) rotate(0deg); }
-  to   { transform: translate(-50%, -50%) rotate(360deg); }
-}
-
-@keyframes spin-reverse {
-  from { transform: translate(-50%, -50%) rotate(360deg); }
-  to   { transform: translate(-50%, -50%) rotate(0deg); }
-}
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(28px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes pulseSoft {
-  0%, 100% { opacity: 0.35; }
-  50%       { opacity: 0.80; }
-}
-
-@keyframes scrollBounce {
-  0%, 100% { transform: translateY(0); opacity: 0.5; }
-  50%       { transform: translateY(6px); opacity: 1; }
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   Responsive typography scale helpers
-   ───────────────────────────────────────────────────────────────────────────── */
-.display-xl {
-  font-family: var(--font-cormorant), Georgia, serif;
-  font-size: clamp(2.75rem, 6vw, 5.5rem);
-  font-weight: 300;
-  line-height: 1.08;
-  letter-spacing: -0.01em;
-}
-
-.display-lg {
-  font-family: var(--font-cormorant), Georgia, serif;
-  font-size: clamp(2.25rem, 4.5vw, 4rem);
-  font-weight: 300;
-  line-height: 1.12;
-}
-
-.body-lg {
-  font-family: var(--font-lato), sans-serif;
-  font-size: clamp(1rem, 1.5vw, 1.125rem);
-  line-height: 1.75;
-  color: rgba(27, 42, 74, 0.75);
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   [V1.1] Kannada Script Utility
-   Apply to any element displaying Kannada text (ಪಾಡ್ಯ, ಅಶ್ವಿನಿ, etc.) so it
-   renders with Noto Sans Kannada rather than falling back to a generic
-   system font that may lack full Kannada glyph coverage.
-   ───────────────────────────────────────────────────────────────────────────── */
-.font-kannada {
-  font-family: var(--font-kannada), 'Noto Sans Kannada', sans-serif;
+/* Shimmer skeleton */
+.skeleton {
+  @apply animate-shimmer bg-gradient-to-r from-muted via-muted-foreground/10 to-muted;
+  background-size: 200% 100%;
 }

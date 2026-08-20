@@ -1,43 +1,99 @@
-// app/api/v1/events/publish/route.ts
-// POST: publish a notification event (server-to-server, callback secret required)
-// Also usable from admin for manual event triggering.
+import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+import { verifyAdminToken, extractBearerToken } from '@/src/lib/auth/hmac';
+import { createServiceClient, isSupabaseConfigured } from '@/src/lib/supabase/server';
+import type { ApiResponse } from '@/src/types';
 
-import { NextRequest, NextResponse }  from 'next/server'
-import { createSupabaseServerClient } from '@/lib/supabase/server'
-import { publishEvent }               from '@/lib/notifications/event-engine'
-import { bootstrapNotificationHandlers } from '@/lib/services/notification-service'
-import type { PublishEventPayload }   from '@/lib/types/notifications'
+const schema = z.object({
+  title:       z.string().min(1).max(200),
+  description: z.string().min(1).max(2000),
+  date:        z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  category:    z.enum(['festival','muhurta','alert','general']),
+  region:      z.enum(['KARNATAKA','ANDHRA','TAMIL_NADU','KERALA','MAHARASHTRA','NATIONAL']).optional(),
+  lang:        z.enum(['en','kn']).optional(),
+});
 
-export const dynamic = 'force-dynamic'
+function isAuthorized(req: NextRequest): boolean {
+  const EVENT_SECRET = process.env.VEDRITH_EVENT_SECRET;
 
-export async function POST(request: NextRequest) {
+  // Path 1 — Event secret header
+  const secretHeader = req.headers.get('x-vedrith-event-secret');
+  if (EVENT_SECRET && secretHeader) {
+    // Constant-time comparison
+    const a = Buffer.from(secretHeader.padEnd(64, '\0'));
+    const b = Buffer.from(EVENT_SECRET.padEnd(64, '\0'));
+    if (a.length === b.length) {
+      let diff = 0;
+      for (let i = 0; i < a.length; i++) diff |= a[i] ^ b[i];
+      if (diff === 0) return true;
+    }
+  }
+
+  // Path 2 — HMAC admin session token
+  const bearer = extractBearerToken(req.headers.get('authorization'));
+  if (bearer && verifyAdminToken(bearer)) return true;
+
+  // Missing or invalid secret — never open
+  return false;
+}
+
+export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse<{ id: string }>>> {
+  if (!isAuthorized(req)) {
+    return NextResponse.json(
+      { success: false, error: 'Unauthorized', code: 'UNAUTHORIZED' },
+      { status: 401 }
+    );
+  }
+
   try {
-    // Accept either a shared secret (server-to-server) or a session cookie (admin)
-    const secret         = request.headers.get('x-vedrith-event-secret')
-    const expectedSecret = process.env.VEDRITH_EVENT_SECRET
-
-    if (expectedSecret && secret !== expectedSecret) {
-      // Fall back to session auth
-      const supabase = await createSupabaseServerClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
-
-    bootstrapNotificationHandlers()
-
-    const body    = await request.json() as PublishEventPayload
-    const { eventType, sourceModule, sourceId, actorId, payload, correlationId } = body
-
-    if (!eventType || !sourceModule) {
+    const body   = await req.json();
+    const parsed = schema.safeParse(body);
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Required: eventType, sourceModule' },
-        { status: 400 },
-      )
+        { success: false, error: 'Invalid event data', code: 'VALIDATION_ERROR' },
+        { status: 400 }
+      );
     }
 
-    const event = await publishEvent({ eventType, sourceModule, sourceId, actorId, payload: payload ?? {}, correlationId })
-    return NextResponse.json({ event }, { status: 201 })
+    if (!isSupabaseConfigured()) {
+      return NextResponse.json(
+        { success: false, error: 'Storage unavailable', code: 'SERVICE_UNAVAILABLE' },
+        { status: 503 }
+      );
+    }
+
+    const supabase = createServiceClient();
+    if (!supabase) {
+      return NextResponse.json(
+        { success: false, error: 'DB connection failed', code: 'DB_ERROR' },
+        { status: 503 }
+      );
+    }
+
+    const { data, error } = await supabase
+      .from('events')
+      .insert({
+        ...parsed.data,
+        created_at: new Date().toISOString(),
+        published:  true,
+      })
+      .select('id')
+      .single();
+
+    if (error) {
+      console.error('[events/publish] Supabase error:', error);
+      return NextResponse.json(
+        { success: false, error: 'Failed to publish event', code: 'DB_INSERT_ERROR' },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ success: true, data: { id: data.id } });
   } catch (err) {
-    return NextResponse.json({ error: (err as Error).message }, { status: 500 })
+    console.error('[events/publish/route]', err);
+    return NextResponse.json(
+      { success: false, error: 'Server error', code: 'INTERNAL_ERROR' },
+      { status: 500 }
+    );
   }
 }

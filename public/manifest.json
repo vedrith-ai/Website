@@ -1,0 +1,27 @@
+{
+  "name": "VedRith — Vedic Astrology",
+  "short_name": "VedRith",
+  "description": "Daily Panchanga, Kundali and Muhurta in English & Kannada",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#FFF8E7",
+  "theme_color": "#f56e15",
+  "lang": "en-IN",
+  "categories": ["lifestyle", "utilities"],
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icons/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ],
+  "screenshots": [
+    { "src": "/icons/screenshot-wide.png",   "sizes": "1280x720", "type": "image/png", "form_factor": "wide" },
+    { "src": "/icons/screenshot-narrow.png", "sizes": "390x844",  "type": "image/png", "form_factor": "narrow" }
+  ],
+  "shortcuts": [
+    { "name": "Today's Panchanga", "short_name": "Panchanga", "url": "/panchanga", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Kundali",           "short_name": "Kundali",   "url": "/kundali",   "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] }
+  ],
+  "prefer_related_applications": false,
+  "scope": "/"
+}

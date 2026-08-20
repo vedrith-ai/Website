@@ -1,21 +1,14 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// GET /api/v1/version
-// Returns the current app build ID and version string.
-// Polled by the client auto-updater to detect new deployments.
-// ─────────────────────────────────────────────────────────────────────────────
+import { NextResponse } from 'next/server';
 
-import { type NextRequest, NextResponse } from 'next/server'
+const BUILD_ID  = process.env.NEXT_PUBLIC_BUILD_ID ?? 'v1.0.0';
+const BUILD_TIME = new Date().toISOString();
 
-export const runtime = 'edge'
-export const dynamic = 'force-dynamic'
-
-const BUILD_ID = process.env.NEXT_PUBLIC_BUILD_ID ?? 'dev'
-const VERSION  = '1.0.0-rc1'
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function GET(_req: NextRequest) {
-  return NextResponse.json(
-    { version: VERSION, buildId: BUILD_ID, ok: true },
-    { headers: { 'Cache-Control': 'no-store, max-age=0' } }
-  )
+export async function GET() {
+  return NextResponse.json({
+    version:   BUILD_ID,
+    buildTime: BUILD_TIME,
+    app:       'vedrith',
+  }, {
+    headers: { 'Cache-Control': 'no-store' },
+  });
 }
