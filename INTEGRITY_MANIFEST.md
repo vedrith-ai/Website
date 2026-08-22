@@ -81,3 +81,20 @@ Generated: 2026-08-21T11:05:57Z
 ## Deployment
 - URL: https://vedrith.sharvasit.in · Platform: Vercel
 - Command: `npm ci && npm run lint && npm test && npm run build && vercel --prod`
+
+## ESLint Warning Fixes (GitHub repo engine files)
+Generated: 2026-08-22T13:24:28Z
+
+The 7 ESLint warnings in the Vercel build log are in:
+  lib/engines/ephemeris/ayanamsha.ts  (line 7)  — J2000 → _J2000
+  lib/engines/ephemeris/planets.ts    (line 45) — d → _d
+  lib/engines/ephemeris/sunrise.ts    (line 59) — tropicalLongitude → _tropicalLongitude
+  lib/engines/ephemeris/sunrise.ts    (line 204)— m → _m
+  lib/engines/kundali/houses.ts       (line 2)  — remove computeObliquity import
+  lib/engines/kundali/zodiac.ts       (line 2)  — remove computeAyanamsha import
+  lib/engines/panchanga/nakshatra.ts  (line 7)  — remove normalize360 import
+
+Run in your GitHub repo root:
+  node fix-engine-warnings.js
+  git add -A && git commit -m "fix: remove unused vars in engine files"
+  git push
