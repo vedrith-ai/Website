@@ -1,100 +1,82 @@
-# VedRith V1.0 — Integrity Manifest
-Generated: 2026-08-21T11:05:57Z
+# VedRith V1 — Final Deployment Candidate
 
-## Build Certification
-- TypeScript errors: **0**
-- ESLint warnings: **0**
-- ESLint errors: **0**
-- Test suite: **261 / 261** _(run `npm ci && npm test` to verify)_
-- Production build: **CLEAN** _(run `npm ci && npm run build` to verify)_
+## Release
+- Version: 1.0.0
+- Product: VedRith
+- Production domain: https://vedrith.sharvasit.in
+- Scope: V1 only; future roadmap modules are not represented as live features.
 
-## Coverage
-- Pages: **25 / 25** (24 × page.tsx + not-found.tsx)
-- API routes: **10** (panchanga, kundali, contact, events, events/publish, location, admin/auth, admin/notify, version, search)
-- i18n keys (ui.ts): **478** EN+KN pairs · 0 missing · 0 duplicates · 0 empty
-- package-lock.json: **PRESENT** (lockfileVersion 3, 825 packages)
+## V1 live capabilities
+- Location-aware daily Panchanga
+- Rich Panchanga V1.1 calculations and traditional knowledge presentation
+- English and Kannada
+- Full Kundali generation with Supabase persistence
+- North Indian and South Indian Kundali charts
+- Kundali JPG export
+- Traditional Nakshatra/Pada-based name-starting-sound guidance
+- Daily Panchanga JPG/share card in four aspect ratios
+- Core Knowledge pages: Tithi, Yoga, Karana, Vara, Nakshatra
+- Search, Settings, Contact, About, Privacy
+- PWA install prompt, Continue-in-Browser option, service-worker registration and update notification
+- Protected admin and event publishing infrastructure with HttpOnly admin session cookie
 
-## Critical File Hashes (SHA-256)
-| File | SHA-256 |
-|------|---------|
-| src/i18n/ui.ts | 23cb63a5564074c2365369c266ed72a90663221fa549cea11acb07ed624e0c01 |
-| middleware.ts | 70e9ad95536e2763ffb0015cbc13d394da119b61ea6cf2e745546b39598ae848 |
-| src/lib/utils/location.ts | 2d4f9dddc3d0ba4726293a0ad837583188115c92ed553c1784cd00d8cf8db702 |
-| components/providers/LangProvider.tsx | e67db27993165874f64924169137f74ff8f2ed785390019998be7fa121198e9f |
-| components/providers/LocationProvider.tsx | 59731f57dc549c9d29e0d55b4f92dbca111d8a91d261a61ed80aa6cae801abc8 |
-| components/share/ShareCard.tsx | 3d2c3319f6d77e08b2949d856131f252c3aeac3aff84c9b67bd5c3217fb5d480 |
-| app/not-found.tsx | f5c677c15c44025b3bb2e83f79ec625e0ace52410f4f3b4f562b8da028ebdddd |
-| components/NotFoundContent.tsx | 8acba9a59ee8f09131f3a76c90219dae1a020db5eba500d40006aefaa56a8db0 |
-| app/api/v1/contact/route.ts | c21250a5bc9c3ce097b292313ef01a90531a82b353e200bfe0f416c9e351bd97 |
-| app/api/v1/events/publish/route.ts | 6f3642b2a293cb86f61c35728361c016451d8945452368e5abddde4f3a656e84 |
-| src/lib/panchanga/engine.ts | fee640d13b7bd5cc979300d54945cee8ac5e71da1f3545c30372ee8f4d16351c |
-| src/lib/kundali/calculator.ts | 8c892ae4e989d759e5ca0484c9868f8a66691078892cd3b952f86d791dba87de |
-| src/lib/auth/hmac.ts | e682b1904964c737757cbf131e8268564b2dacd3ff253a9a7a1f18518b2855db |
+## Intentionally future/not-live in V1
+- Advanced Dasha/forecasting
+- Dosha/remedies engine
+- Temple directory
+- full devotional library
+- family dashboard
+- full Muhurta engine
+- monetization
+- additional Indian languages beyond English/Kannada
 
-## V1.0 Audit — All Issues Resolved
-| Issue | Status |
-|-------|--------|
-| Homepage `const lang = 'en'` | ✅ FIXED — LangProvider + useLang() |
-| HeroPanchangaStrip Bengaluru hardcode | ✅ FIXED — useLocation() |
-| Missing package-lock.json | ✅ FIXED — lockfileVersion 3, 825 packages |
-| 404 page hardcoded English | ✅ FIXED — NotFoundContent uses useLang() |
-| Share Card `window.print()` | ✅ FIXED — Canvas API JPEG download |
-| Event publish bypass (unset secret) | ✅ FIXED |
-| Contact API fake success | ✅ FIXED — 503 in production |
-| Admin HMAC two-layer defence | ✅ CONFIRMED |
-| col.pada missing key | ✅ FIXED |
-| error.boundary missing key | ✅ FIXED |
-| Hardcoded region 'KANNADA' | ✅ FIXED — getRegionKey() |
-| Share card domain vedrith.com | ✅ FIXED — vedrith.sharvasit.in |
+## Security
+- Next.js pinned to 15.5.24.
+- Admin session is HttpOnly/Secure/SameSite=Strict in production.
+- No admin token is kept in browser sessionStorage.
+- Event publish endpoint requires either the configured event secret or a verified admin session.
+- No production secrets are committed.
 
-## Share Card — JPEG Download
-- Method: HTML5 Canvas API (no new dependencies)
-- Format: JPEG 93% quality
-- Output resolutions: 1:1 → 1080×1080 · 4:5 → 1080×1350 · 9:16 → 1080×1920 · 16:9 → 1920×1080
-- Filename: VedRith-Panchanga-YYYY-MM-DD.jpg
-- Preserves: theme, aspect ratio, language (EN/KN), Panchanga data, domain watermark
+## Static QA completed
+- ZIP integrity verified.
+- No node_modules/.next/.git/.vercel/build-info artifacts.
+- No unrelated server/ project contamination.
+- No PageTemplate-backed production routes.
+- No production window.print() implementation.
+- No missing internal TypeScript/TSX imports found by static resolver scan.
+- Full Kundali engine/chart/repository files present.
+- Rich Panchanga engine and daily API present.
+- PWA registration and runtime prompts present.
+- Core knowledge route placeholders removed for Tithi/Yoga/Karana/Vara.
 
-## Language System
-- Provider: LangProvider (React context, localStorage key: vedrith:lang)
-- Hook: useLang() — used by all pages, components, and 404
-- Toggle: Header language button (EN ↔ KN)
-- SSR default: 'en'; hydrates to stored preference on client
-- 404 page: NotFoundContent client component uses useLang()
+## Required final environment verification
+This archive intentionally does not contain a generated package-lock.json because the previous lockfile pinned an outdated Next.js version and the current runtime could not reach the npm registry to regenerate it.
 
-## Location Resolution Chain
-1. Saved manual preference (localStorage)
-2. Device GPS (Geolocation API, 6s timeout)
-3. IP geolocation via /api/v1/location (Vercel Edge geo headers)
-4. Previously saved location (any source)
-5. Fallback: Bengaluru 12.9716°N, 77.5946°E
+In the actual GitHub/Vercel build environment run:
 
-## Security Audit
-- window.print() in ShareCard: **NONE** (removed, replaced with Canvas download)
-- Committed secrets: **NONE FOUND**
-- vedrith.com references: **NONE** in src/app/components
-- tsbuildinfo: **NONE**
-- const lang = 'en' hardcoded: **NONE** in app/components
-- Event publish bypass: **FIXED**
-- Contact fake-success: **FIXED**
-- Admin dashboard: **Intentionally English-only** (NotificationDashboard.tsx)
+```bash
+npm install
+npm ci
+npm run lint
+npm test
+npm run build
+```
 
-## Deployment
-- URL: https://vedrith.sharvasit.in · Platform: Vercel
-- Command: `npm ci && npm run lint && npm test && npm run build && vercel --prod`
+After `npm install`, commit the generated `package-lock.json`. `npm ci` must then succeed from that lockfile.
 
-## ESLint Warning Fixes (GitHub repo engine files)
-Generated: 2026-08-22T13:24:28Z
-
-The 7 ESLint warnings in the Vercel build log are in:
-  lib/engines/ephemeris/ayanamsha.ts  (line 7)  — J2000 → _J2000
-  lib/engines/ephemeris/planets.ts    (line 45) — d → _d
-  lib/engines/ephemeris/sunrise.ts    (line 59) — tropicalLongitude → _tropicalLongitude
-  lib/engines/ephemeris/sunrise.ts    (line 204)— m → _m
-  lib/engines/kundali/houses.ts       (line 2)  — remove computeObliquity import
-  lib/engines/kundali/zodiac.ts       (line 2)  — remove computeAyanamsha import
-  lib/engines/panchanga/nakshatra.ts  (line 7)  — remove normalize360 import
-
-Run in your GitHub repo root:
-  node fix-engine-warnings.js
-  git add -A && git commit -m "fix: remove unused vars in engine files"
-  git push
+## Live QA checklist
+Verify after deployment:
+1. Home loads with live location-aware Panchanga.
+2. Device location permission works; selected manual location is remembered.
+3. Panchanga page calculates selected date/location correctly.
+4. Kundali generates, persists and opens `/kundali/[id]`.
+5. North/South charts render.
+6. Kundali JPG downloads on desktop and mobile.
+7. Panchanga JPG downloads on all four formats.
+8. English/Kannada switching persists after reload.
+9. PWA install prompt and Continue in Browser both work.
+10. PWA update is detected after a new deployment.
+11. Admin login/logout works with HttpOnly cookie.
+12. Event publish and admin notify reject unauthenticated requests.
+13. Contact works with production Supabase configuration.
+14. Mobile navigation and all primary routes work.

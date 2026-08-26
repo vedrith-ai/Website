@@ -1,10 +1,8 @@
-# VedRith V1 Security Dependency Update
+# VedRith V1 — Security Dependency Patch
 
-This release pins Next.js to **15.5.24**.
+Next.js is pinned to `15.5.24`, the patched 15.x Maintenance-LTS release for the August 25, 2026 critical security release.
 
-Next.js 15.5.24 is the patched Maintenance-LTS release for the August 2026 critical security release.
-
-Before committing this release to GitHub, run:
+The project intentionally ships without the previous stale package-lock.json because that lockfile resolved Next.js 15.5.22. Before committing to GitHub, run:
 
 ```bash
 npm install
@@ -14,4 +12,6 @@ npm test
 npm run build
 ```
 
-The repository intentionally does not include the previous package-lock.json because it pinned vulnerable Next.js 15.1.0. `npm install` must generate a fresh lockfile for Next.js 15.5.24 and that generated package-lock.json should be committed before production deployment.
+The `npm install` step regenerates a lockfile whose resolved Next.js version is 15.5.24.
+
+Do not use `npm audit fix --force`; keep dependency changes limited to the targeted security patch unless a real build issue requires otherwise.

@@ -12,9 +12,7 @@ import { useState, useEffect } from 'react';
 
 interface Notification { id: string; title: string; category: string; date: string; published: boolean }
 
-interface Props { sessionToken: string }
-
-export function NotificationDashboard({ sessionToken }: Props) {
+export function NotificationDashboard() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading,  setLoading]  = useState(true);
   const [error,    setError]    = useState<string | null>(null);
@@ -24,13 +22,12 @@ export function NotificationDashboard({ sessionToken }: Props) {
 
   useEffect(() => {
     fetch('/api/v1/events', {
-      headers: { Authorization: `Bearer ${sessionToken}` },
     })
       .then(r => r.json())
       .then(json => { if (json.success) setNotifications(json.data ?? []); else setError(json.error); })
       .catch(() => setError('Failed to load notifications'))
       .finally(() => setLoading(false));
-  }, [sessionToken]);
+  }, []);
 
   const handlePublish = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +38,6 @@ export function NotificationDashboard({ sessionToken }: Props) {
         method:  'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization:  `Bearer ${sessionToken}`,
         },
         body: JSON.stringify({ ...form, lang: 'en' }),
       });

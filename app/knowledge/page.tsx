@@ -1,14 +1,3 @@
-import type { Metadata } from 'next';
-import { PageTemplate } from '@/components/PageTemplate';
-
-export const metadata: Metadata = { title: 'knowledge.title | VedRith' };
-
-export default function Page() {
-  return (
-    <PageTemplate
-      titleKey="knowledge.title"
-      description="Deep-dive articles on Vedic concepts"
-      current="/knowledge"
-    />
-  );
-}
+import type { Metadata } from 'next'; import KnowledgePageClient from '@/components/knowledge/KnowledgePageClient';
+export const metadata: Metadata={title:'Knowledge | VedRith',description:'Learn the Panchanga and Jyotisha concepts used by VedRith.'};
+export default function Page(){return <KnowledgePageClient/>;}

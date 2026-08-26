@@ -68,6 +68,11 @@ export const ui: I18nMap = {
   'error.date':           { en: 'Invalid date.',                        kn: 'ಅಮಾನ್ಯ ದಿನಾಂಕ.' },
   'error.required':       { en: 'This field is required.',              kn: 'ಈ ಕ್ಷೇತ್ರ ಅಗತ್ಯ.' },
 
+
+  'pwa.update.title': { en: 'VedRith updated', kn: 'ವೇದಋಥ್ ನವೀಕರಿಸಲಾಗಿದೆ' },
+  'pwa.update.desc': { en: 'A newer version is ready. Update now to use the latest VedRith.', kn: 'ಹೊಸ ಆವೃತ್ತಿ ಸಿದ್ಧವಾಗಿದೆ. ಇತ್ತೀಚಿನ ವೇದಋಥ್ ಬಳಸಲು ಈಗಲೇ ನವೀಕರಿಸಿ.' },
+  'pwa.update.button': { en: 'Update', kn: 'ನವೀಕರಿಸಿ' },
+
   // ── Panchanga ────────────────────────────────────────────────────────────────
   'panchanga.title':         { en: 'Today\'s Panchanga',    kn: 'ಇಂದಿನ ಪಂಚಾಂಗ' },
   'panchanga.subtitle':      { en: 'Five limbs of the day', kn: 'ದಿನದ ಐದು ಅಂಗಗಳು' },

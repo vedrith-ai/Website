@@ -34,6 +34,16 @@ export function verifyAdminToken(token: string): boolean {
   }
 }
 
+export const ADMIN_SESSION_COOKIE = 'vedrith_admin_session';
+
+export function extractAdminToken(req: { headers: Headers; cookies?: { get(name: string): { value: string } | undefined } }): string | null {
+  const cookieToken = req.cookies?.get?.(ADMIN_SESSION_COOKIE)?.value;
+  if (cookieToken) return cookieToken;
+  const authHeader = req.headers.get('authorization');
+  if (authHeader?.startsWith('Bearer ')) return authHeader.slice(7).trim() || null;
+  return null;
+}
+
 export function extractBearerToken(authHeader: string | null): string | null {
   if (!authHeader?.startsWith('Bearer ')) return null;
   return authHeader.slice(7).trim() || null;
