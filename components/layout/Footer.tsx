@@ -10,7 +10,7 @@ export function Footer({lang}:{lang:Lang}) {
         <div className="flex flex-col items-center text-center mb-12">
           <Image src="/images/logo-icon.png" alt="VedRith" width={84} height={84} className="h-20 w-20 mb-4 opacity-90" />
           <p className="font-serif text-3xl font-light">VedRith</p>
-          <p className="font-sans text-[0.7rem] tracking-[0.22em] uppercase text-gold-500 mt-2">Powered by Sharva's IT</p>
+          <p className="font-sans text-[0.7rem] tracking-[0.22em] uppercase text-gold-500 mt-2">Powered by Sharva&apos;s IT</p>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
           {[
@@ -28,7 +28,7 @@ export function Footer({lang}:{lang:Lang}) {
           ))}
         </div>
         <div className="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row justify-between gap-3 text-xs text-cream-100/35">
-          <span>© {new Date().getFullYear()} VedRith · Powered by Sharva's IT</span>
+          <span>© {new Date().getFullYear()} VedRith · Powered by Sharva&apos;s IT</span>
           <span>vedrith.sharvasit.in</span>
         </div>
       </div>

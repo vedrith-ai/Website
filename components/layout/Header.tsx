@@ -3,7 +3,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { useLang } from '@/components/providers/LangProvider';
 import { t } from '@/src/i18n/ui';
 import type { Lang } from '@/src/types';
 

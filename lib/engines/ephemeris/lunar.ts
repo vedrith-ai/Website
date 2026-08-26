@@ -179,7 +179,7 @@ export function computeLunarPosition(jde: number): LunarPosition {
   sumB -=  115 * Math.sin(toRad(Lp + Mp))
 
   // ── Distance periodic terms (top 5, for moonrise/set refraction) ──────────
-  let sumR = -20905355 * Math.cos(Mprad)
+  const sumR = -20905355 * Math.cos(Mprad)
             -  3699111 * Math.cos(2 * Dprad - Mprad)
             -  2955968 * Math.cos(2 * Dprad)
             -   569925 * Math.cos(2 * Mprad)
