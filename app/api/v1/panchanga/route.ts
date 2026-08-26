@@ -29,7 +29,19 @@ function mapInput(raw:any){
 }
 
 async function compute(raw:any){
-  const parsed=parsePanchangaQuery(mapInput(raw));
+  const mappedSource = mapInput(raw)
+  const mapped: Record<string, string | undefined> = {
+    date: String(mappedSource.date ?? ''),
+    lat: String(mappedSource.lat ?? ''),
+    lng: String(mappedSource.lng ?? ''),
+    timezone: String(mappedSource.timezone ?? ''),
+    locationName: mappedSource.locationName ? String(mappedSource.locationName) : undefined,
+    region: mappedSource.region ? String(mappedSource.region) : undefined,
+    ayanamsha: mappedSource.ayanamsha ? String(mappedSource.ayanamsha) : undefined,
+    lang: mappedSource.lang ? String(mappedSource.lang) : undefined,
+    calendarSystem: mappedSource.calendarSystem ? String(mappedSource.calendarSystem) : undefined,
+  }
+  const parsed=parsePanchangaQuery(mapped);
   if(!parsed.success) return parsed;
   return {success:true as const,data:await computePanchanga(parsed.data)};
 }

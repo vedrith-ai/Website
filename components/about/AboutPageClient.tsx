@@ -1,2 +1,68 @@
-'use client'; import {Header} from '@/components/layout/Header'; import {Footer} from '@/components/layout/Footer'; import {useLang} from '@/components/providers/LangProvider';
-export default function AboutPageClient(){const {lang,setLang}=useLang();return <><Header lang={lang} onLangChange={setLang}/><main id="main-content" className="bg-cream min-h-screen pt-28 pb-20"><div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8"><div className="grid lg:grid-cols-2 gap-12 items-center"><div><ImageBlock/></div><div><p className="text-[0.65rem] tracking-[0.25em] uppercase text-gold-700">{lang==='kn'?'ನಮ್ಮ ದೃಷ್ಟಿ':'Our Vision'}</p><h1 className="font-serif text-5xl text-navy-900 font-light mt-2">{lang==='kn'?'ವೈದಿಕ ಜ್ಞಾನವನ್ನು ಎಲ್ಲರಿಗೂ':'Vedic wisdom, made accessible'}</h1><p className="text-navy-600 leading-relaxed mt-6">{lang==='kn'?'ವೇದಋಥ್ ಸ್ಥಳಾಧಾರಿತ ಪಂಚಾಂಗ, ಕುಂಡಲಿ ಮತ್ತು ವೈದಿಕ ಜ್ಞಾನವನ್ನು ಸರಳ ಮತ್ತು ಗೌರವಯುತ ಅನುಭವವಾಗಿ ಒಟ್ಟುಗೂಡಿಸುತ್ತದೆ.':'VedRith brings location-aware Panchanga, Kundali and Vedic knowledge together in a simple, respectful experience.'}</p><p className="text-navy-600 leading-relaxed mt-4">Powered by Sharva&apos;s IT.</p></div></div></div></main><Footer lang={lang}/></>}\nfunction ImageBlock(){return <div className="relative hero-bg p-8 flex items-center justify-center min-h-[420px]"><div className="mandala-ring" style={{width:320,height:320,opacity:.15}}/><img src="/images/logo-full.png" alt="VedRith" className="relative z-10 w-64 h-auto"/></div>}
+'use client';
+
+import { Header } from '@/components/layout/Header';
+import { Footer } from '@/components/layout/Footer';
+import { useLang } from '@/components/providers/LangProvider';
+
+export default function AboutPageClient() {
+  const { lang, setLang } = useLang();
+
+  return (
+    <>
+      <Header lang={lang} onLangChange={setLang} />
+
+      <main
+        id="main-content"
+        className="bg-cream min-h-screen pt-28 pb-20"
+      >
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <ImageBlock />
+            </div>
+
+            <div>
+              <p className="text-[0.65rem] tracking-[0.25em] uppercase text-gold-700">
+                {lang === 'kn' ? 'ನಮ್ಮ ದೃಷ್ಟಿ' : 'Our Vision'}
+              </p>
+
+              <h1 className="font-serif text-5xl text-navy-900 font-light mt-2">
+                {lang === 'kn'
+                  ? 'ವೈದಿಕ ಜ್ಞಾನವನ್ನು ಎಲ್ಲರಿಗೂ'
+                  : 'Vedic wisdom, made accessible'}
+              </h1>
+
+              <p className="text-navy-600 leading-relaxed mt-6">
+                {lang === 'kn'
+                  ? 'ವೇದಋಥ್ ಸ್ಥಳಾಧಾರಿತ ಪಂಚಾಂಗ, ಕುಂಡಲಿ ಮತ್ತು ವೈದಿಕ ಜ್ಞಾನವನ್ನು ಸರಳ ಮತ್ತು ಗೌರವಯುತ ಅನುಭವವಾಗಿ ಒಟ್ಟುಗೂಡಿಸುತ್ತದೆ.'
+                  : 'VedRith brings location-aware Panchanga, Kundali and Vedic knowledge together in a simple, respectful experience.'}
+              </p>
+
+              <p className="text-navy-600 leading-relaxed mt-4">
+                Powered by Sharva&apos;s IT.
+              </p>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <Footer lang={lang} />
+    </>
+  );
+}
+
+function ImageBlock() {
+  return (
+    <div className="relative hero-bg p-8 flex items-center justify-center min-h-[420px]">
+      <div
+        className="mandala-ring"
+        style={{ width: 320, height: 320, opacity: 0.15 }}
+      />
+      <img
+        src="/images/logo-full.png"
+        alt="VedRith"
+        className="relative z-10 w-64 h-auto"
+      />
+    </div>
+  );
+}

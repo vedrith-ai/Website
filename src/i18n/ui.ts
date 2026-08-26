@@ -409,7 +409,6 @@ export const ui: I18nMap = {
   'pwa.install.btn':   { en: 'Install',               kn: 'ಸ್ಥಾಪಿಸಿ' },
   'pwa.dismiss':       { en: 'Not now',               kn: 'ಇಲ್ಲ, ಧನ್ಯವಾದ' },
   'pwa.update':        { en: 'New version available!',kn: 'ಹೊಸ ಆವೃತ್ತಿ ಲಭ್ಯ!' },
-  'pwa.update.desc':   { en: 'Tap to update VedRith', kn: 'ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಟ್ಯಾಪ್ ಮಾಡಿ' },
   'pwa.update.btn':    { en: 'Update now',            kn: 'ಈಗ ಅಪ್‌ಡೇಟ್ ಮಾಡಿ' },
   'pwa.offline':       { en: 'You are offline',       kn: 'ನೀವು ಆಫ್‌ಲೈನ್ ಆಗಿದ್ದೀರಿ' },
 

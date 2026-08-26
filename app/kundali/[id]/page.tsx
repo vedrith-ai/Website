@@ -17,6 +17,6 @@ export default async function KundaliChartPage({params}:Props){
   const {id}=await params;
   let record=null;
   try{record=await getKundaliRepository().getById(id);}catch{}
-  if(!record) notFound();
-  return <KundaliChartShell record={record}/>;
+  if (!record) return notFound();
+  return <KundaliChartShell record={record}/>;;
 }
