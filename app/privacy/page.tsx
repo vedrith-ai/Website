@@ -1,14 +1,3 @@
-import type { Metadata } from 'next';
-import { PageTemplate } from '@/components/PageTemplate';
-
-export const metadata: Metadata = { title: 'footer.privacy | VedRith' };
-
-export default function Page() {
-  return (
-    <PageTemplate
-      titleKey="footer.privacy"
-      description="Privacy policy for VedRith"
-      current="/privacy"
-    />
-  );
-}
+import type {Metadata} from 'next'; import Link from 'next/link';
+export const metadata:Metadata={title:'Privacy | VedRith'};
+export default function Page(){return <main className="min-h-screen bg-cream pt-28 pb-20"><div className="max-w-3xl mx-auto px-4"><h1 className="font-serif text-5xl text-navy-900 font-light">Privacy</h1><p className="text-navy-600 mt-5 leading-relaxed">VedRith is designed to minimize unnecessary data collection. Location preferences used for Panchanga are stored locally where possible. Account and service data is stored only where required for the requested feature. No passwords or secret service credentials are exposed to the client.</p><Link href="/" className="btn-ghost mt-8">Back</Link></div></main>}

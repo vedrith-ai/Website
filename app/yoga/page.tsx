@@ -1,14 +1,1 @@
-import type { Metadata } from 'next';
-import { PageTemplate } from '@/components/PageTemplate';
-
-export const metadata: Metadata = { title: 'yoga.page.title | VedRith' };
-
-export default function Page() {
-  return (
-    <PageTemplate
-      titleKey="yoga.page.title"
-      description="Auspicious and inauspicious Yoga combinations"
-      current="/yoga"
-    />
-  );
-}
+import KnowledgeDetail from '@/components/knowledge/KnowledgeDetail'; export default function Page(){return <KnowledgeDetail kind="yoga"/>;}

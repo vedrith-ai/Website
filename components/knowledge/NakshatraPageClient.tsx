@@ -1,0 +1,86 @@
+'use client';
+
+import Link from 'next/link';
+import { Header } from '@/components/layout/Header';
+import { Footer } from '@/components/layout/Footer';
+import { useLang } from '@/components/providers/LangProvider';
+
+const data = [
+  ['Ashwini', 'ಅಶ್ವಿನಿ', 'Ashwini Kumaras'],
+  ['Bharani', 'ಭರಣಿ', 'Yama'],
+  ['Krittika', 'ಕೃತ್ತಿಕಾ', 'Agni'],
+  ['Rohini', 'ರೋಹಿಣಿ', 'Brahma'],
+  ['Mrigashira', 'ಮೃಗಶಿರ', 'Soma'],
+  ['Ardra', 'ಆರ್ದ್ರಾ', 'Rudra'],
+  ['Punarvasu', 'ಪುನರ್ವಸು', 'Aditi'],
+  ['Pushya', 'ಪುಷ್ಯ', 'Brihaspati'],
+  ['Ashlesha', 'ಆಶ್ಲೇಷ', 'Nagas'],
+  ['Magha', 'ಮಘಾ', 'Pitrs'],
+  ['Purva Phalguni', 'ಪೂರ್ವ ಫಲ್ಗುಣಿ', 'Bhaga'],
+  ['Uttara Phalguni', 'ಉತ್ತರ ಫಲ್ಗುಣಿ', 'Aryaman'],
+  ['Hasta', 'ಹಸ್ತ', 'Savitar'],
+  ['Chitra', 'ಚಿತ್ರಾ', 'Vishwakarma'],
+  ['Swati', 'ಸ್ವಾತಿ', 'Vayu'],
+  ['Vishakha', 'ವಿಶಾಖಾ', 'Indra-Agni'],
+  ['Anuradha', 'ಅನುರಾಧಾ', 'Mitra'],
+  ['Jyeshtha', 'ಜ್ಯೇಷ್ಠಾ', 'Indra'],
+  ['Mula', 'ಮೂಲ', 'Nirriti'],
+  ['Purva Ashadha', 'ಪೂರ್ವಾಷಾಢ', 'Apas'],
+  ['Uttara Ashadha', 'ಉತ್ತರಾಷಾಢ', 'Vishvedevas'],
+  ['Shravana', 'ಶ್ರವಣ', 'Vishnu'],
+  ['Dhanishtha', 'ಧನಿಷ್ಠಾ', 'Vasus'],
+  ['Shatabhisha', 'ಶತಭಿಷ', 'Varuna'],
+  ['Purva Bhadrapada', 'ಪೂರ್ವಭಾದ್ರಪದ', 'Aja Ekapada'],
+  ['Uttara Bhadrapada', 'ಉತ್ತರಭಾದ್ರಪದ', 'Ahir Budhnya'],
+  ['Revati', 'ರೇವತಿ', 'Pushan'],
+] as const;
+
+export default function NakshatraPage() {
+  const { lang, setLang } = useLang();
+
+  return (
+    <>
+      <Header lang={lang} onLangChange={setLang} />
+
+      <main id="main-content" className="bg-cream min-h-screen pt-28 pb-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <p className="text-[0.65rem] tracking-[0.25em] uppercase text-gold-700">
+            {lang === 'kn' ? 'ನಕ್ಷತ್ರ ಜ್ಞಾನ' : 'Nakshatra Knowledge'}
+          </p>
+
+          <h1 className="font-serif text-5xl text-navy-900 font-light mt-2">
+            {lang === 'kn' ? '೨೭ ನಕ್ಷತ್ರಗಳು' : 'The 27 Nakshatras'}
+          </h1>
+
+          <p className="text-navy-600 mt-4 mb-10">
+            {lang === 'kn'
+              ? 'ಪ್ರತಿ ನಕ್ಷತ್ರದ ಹೆಸರು ಮತ್ತು ಅಧಿದೇವತೆಯನ್ನು ತಿಳಿಯಿರಿ.'
+              : 'A concise reference to the 27 Nakshatras and their traditional deities.'}
+          </p>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {data.map(([en, kn, deity], index) => (
+              <Link
+                href={`/nakshatra#${index + 1}`}
+                key={en}
+                className="bg-white border border-navy-900/10 p-5 hover:border-gold-500/40 transition"
+              >
+                <p className="text-xs text-gold-700 uppercase tracking-wider">
+                  {String(index + 1).padStart(2, '0')}
+                </p>
+
+                <h2 className="font-serif text-2xl text-navy-900 mt-1">
+                  {lang === 'kn' ? kn : en}
+                </h2>
+
+                <p className="text-sm text-navy-500 mt-2">{deity}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </main>
+
+      <Footer lang={lang} />
+    </>
+  );
+}
