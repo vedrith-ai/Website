@@ -78,27 +78,27 @@ export async function detectIPLocation(): Promise<(LocationData & { source: 'ip'
 // ─── Full resolution chain: GPS → IP → saved → fallback ──────────────────────
 
 export async function resolveLocation(): Promise<LocationData & { source: string }> {
-  // 1. Saved manual preference always wins.
+  // 1. Saved preference (fastest, respects manual selection)
   const saved = getStoredLocation();
   if (saved && saved.source === 'manual') return saved;
 
-  // 2. Reuse the last detected device/network location before prompting again.
-  if (saved && (saved.source === 'gps' || saved.source === 'ip')) return saved;
-
-  // 3. GPS
+  // 2. GPS
   const gps = await detectGPS();
   if (gps) {
     setStoredLocation(gps);
     return gps;
   }
 
-  // 4. IP / network location
+  // 3. IP / network location
   const ip = await detectIPLocation();
   if (ip) {
     setStoredLocation(ip);
     return ip;
   }
 
-  // 5. Safe fallback
-  return saved ?? { ...FALLBACK_LOCATION, source: 'fallback' };
+  // 4. Previously saved (any source)
+  if (saved) return saved;
+
+  // 5. Fallback — Bengaluru
+  return { ...FALLBACK_LOCATION, source: 'fallback' };
 }

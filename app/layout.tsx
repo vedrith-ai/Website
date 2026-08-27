@@ -1,24 +1,8 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Noto_Sans_Kannada, Cormorant_Garamond, Lato } from 'next/font/google';
+import { Inter, Noto_Sans_Kannada } from 'next/font/google';
 import { LangProvider }     from '@/components/providers/LangProvider';
 import { LocationProvider } from '@/components/providers/LocationProvider';
 import './globals.css';
-import { ServiceWorkerRegistration } from '@/components/ServiceWorkerRegistration';
-import { RuntimePrompts } from '@/components/RuntimePrompts';
-
-const cormorant = Cormorant_Garamond({
-  subsets: ['latin'],
-  variable: '--font-cormorant',
-  display: 'swap',
-  weight: ['300','400','500','600','700'],
-});
-
-const lato = Lato({
-  subsets: ['latin'],
-  variable: '--font-lato',
-  display: 'swap',
-  weight: ['300','400','700','900'],
-});
 
 const inter = Inter({
   subsets: ['latin'],
@@ -59,7 +43,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${lato.variable} ${cormorant.variable} ${notoKannada.variable} min-h-screen`}>
+      <body className={`${inter.variable} ${notoKannada.variable} min-h-screen`}>
         <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground">
           Skip to main content
         </a>
@@ -67,8 +51,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <LangProvider>
           <LocationProvider>
             {children}
-            <ServiceWorkerRegistration />
-            <RuntimePrompts />
           </LocationProvider>
         </LangProvider>
       </body>

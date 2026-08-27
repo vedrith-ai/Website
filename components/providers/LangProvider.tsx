@@ -25,7 +25,6 @@ export function LangProvider({ children }: { children: ReactNode }) {
       const stored = localStorage.getItem(LANG_KEY) as Lang | null;
       if (stored && SUPPORTED.includes(stored)) {
         setLangState(stored);
-        document.cookie = `vedrith:lang=${stored}; Path=/; Max-Age=31536000; SameSite=Lax`;
         document.documentElement.lang = stored === 'kn' ? 'kn' : 'en';
       }
     } catch {
@@ -38,7 +37,6 @@ export function LangProvider({ children }: { children: ReactNode }) {
     setLangState(l);
     try {
       localStorage.setItem(LANG_KEY, l);
-      document.cookie = `vedrith:lang=${l}; Path=/; Max-Age=31536000; SameSite=Lax`;
     } catch {}
     document.documentElement.lang = l === 'kn' ? 'kn' : 'en';
     // Notify any non-context listeners (e.g. SW)

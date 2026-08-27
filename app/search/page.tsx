@@ -1,3 +1,14 @@
-'use client';
-import {Header} from '@/components/layout/Header'; import {Footer} from '@/components/layout/Footer'; import {SmartSearch} from '@/components/ui/SmartSearch'; import {useLang} from '@/components/providers/LangProvider';
-export default function Page(){const {lang,setLang}=useLang(); return <><Header lang={lang} onLangChange={setLang}/><main id="main-content" className="bg-cream min-h-screen pt-28 pb-20"><div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center"><p className="text-[0.65rem] tracking-[0.25em] uppercase text-gold-700">VedRith</p><h1 className="font-serif text-5xl text-navy-900 font-light mt-2">{lang==='kn'?'ಹುಡುಕಿ':'Search VedRith'}</h1><p className="text-navy-600 mt-3 mb-10">{lang==='kn'?'ಪಂಚಾಂಗ ಮತ್ತು ವೈದಿಕ ಜ್ಞಾನವನ್ನು ಹುಡುಕಿ.':'Search Panchanga and Vedic knowledge.'}</p><SmartSearch lang={lang}/></div></main><Footer lang={lang}/></>}
+import type { Metadata } from 'next';
+import { PageTemplate } from '@/components/PageTemplate';
+
+export const metadata: Metadata = { title: 'search.title | VedRith' };
+
+export default function Page() {
+  return (
+    <PageTemplate
+      titleKey="search.title"
+      description="Search across Nakshatras, Rashis, Yogas and more"
+      current="/search"
+    />
+  );
+}

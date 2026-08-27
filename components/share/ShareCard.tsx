@@ -2,130 +2,281 @@
 
 import { useState } from 'react';
 import { t } from '@/src/i18n/ui';
-import type { Lang, ShareTheme, ShareAspect } from '@/src/types';
-import type { PanchangaResult } from '@/lib/types/panchanga';
+import type { Lang, PanchangaResponse, ShareTheme, ShareAspect } from '@/src/types';
 
-interface Props { panchanga: PanchangaResult; lang: Lang }
+interface Props { panchanga: PanchangaResponse; lang: Lang }
 
-const THEMES: ShareTheme[] = ['saffron','midnight','lotus','forest'];
-const ASPECTS: ShareAspect[] = ['1:1','4:5','9:16','16:9'];
-const PREVIEW: Record<ShareTheme,{bg:string;text:string;sub:string}> = {
-  saffron:{bg:'from-orange-800 via-amber-600 to-yellow-400',text:'text-white',sub:'text-white/75'},
-  midnight:{bg:'from-slate-950 via-indigo-950 to-slate-800',text:'text-amber-50',sub:'text-amber-200/65'},
-  lotus:{bg:'from-rose-100 via-pink-50 to-rose-200',text:'text-rose-950',sub:'text-rose-700/70'},
-  forest:{bg:'from-emerald-950 via-green-900 to-emerald-700',text:'text-emerald-50',sub:'text-emerald-200/70'}
+const THEMES: ShareTheme[]  = ['saffron', 'midnight', 'lotus', 'forest'];
+const ASPECTS: ShareAspect[] = ['1:1', '4:5', '9:16', '16:9'];
+
+// Preview CSS styles (DOM card)
+const THEME_PREVIEW: Record<ShareTheme, { bg: string; text: string; sub: string }> = {
+  saffron:  { bg: 'from-orange-700 via-amber-500 to-yellow-400',  text: 'text-white',        sub: 'text-white/70' },
+  midnight: { bg: 'from-slate-900 via-indigo-950 to-slate-800',   text: 'text-amber-100',    sub: 'text-amber-200/60' },
+  lotus:    { bg: 'from-rose-100 via-pink-50 to-rose-200',        text: 'text-rose-900',     sub: 'text-rose-700/70' },
+  forest:   { bg: 'from-emerald-900 via-green-800 to-emerald-700',text: 'text-emerald-50',   sub: 'text-emerald-200/70' },
 };
-const CANVAS_DIMS: Record<ShareAspect,{w:number;h:number}> = {
-  '1:1':{w:1080,h:1080},'4:5':{w:1080,h:1350},'9:16':{w:1080,h:1920},'16:9':{w:1920,h:1080}
+
+// Canvas gradient stops per theme
+const THEME_CANVAS: Record<ShareTheme, { stops: [number, string][]; text: string; sub: string }> = {
+  saffron:  { stops: [[0,'#9a3412'],[0.45,'#ea580c'],[1,'#fbbf24']], text:'#ffffff',   sub:'rgba(255,255,255,0.7)' },
+  midnight: { stops: [[0,'#0f0c29'],[0.5,'#302b63'],[1,'#24243e']], text:'#fef3c7',   sub:'rgba(254,243,199,0.6)' },
+  lotus:    { stops: [[0,'#fce7f3'],[0.5,'#fbcfe8'],[1,'#f9a8d4']], text:'#881337',   sub:'rgba(136,19,55,0.7)' },
+  forest:   { stops: [[0,'#14532d'],[0.5,'#166534'],[1,'#15803d']], text:'#ecfdf5',   sub:'rgba(236,253,245,0.65)' },
 };
-const PREVIEW_SIZES: Record<ShareAspect,string> = {
-  '1:1':'aspect-square w-72','4:5':'aspect-[4/5] w-60','9:16':'aspect-[9/16] w-44','16:9':'aspect-video w-full max-w-xl'
+
+const ASPECT_PREVIEW: Record<ShareAspect, string> = {
+  '1:1':  'aspect-square w-64',
+  '4:5':  'aspect-[4/5] w-52',
+  '9:16': 'aspect-[9/16] w-36',
+  '16:9': 'aspect-video w-96',
 };
-const DOMAIN='vedrith.sharvasit.in';
 
-function textFor(lang:Lang,en:string,kn:string){return lang==='kn'?kn:en}
+const CANVAS_DIMS: Record<ShareAspect, { w: number; h: number }> = {
+  '1:1':  { w: 1080, h: 1080 },
+  '4:5':  { w: 1080, h: 1350 },
+  '9:16': { w: 1080, h: 1920 },
+  '16:9': { w: 1920, h: 1080 },
+};
 
-export function ShareCard({panchanga,lang}:Props){
-  const [theme,setTheme]=useState<ShareTheme>('saffron');
-  const [aspect,setAspect]=useState<ShareAspect>('1:1');
-  const [generating,setGenerating]=useState(false);
+const PRODUCTION_DOMAIN = 'vedrith.sharvasit.in';
 
-  const fields = [
-    [textFor(lang,'Vara','ವಾರ'), panchanga.vara.displayName || panchanga.vara.name],
-    [textFor(lang,'Tithi','ತಿಥಿ'), `${panchanga.tithi.displayName || panchanga.tithi.name} · ${panchanga.tithi.pakshaName}`],
-    [textFor(lang,'Nakshatra','ನಕ್ಷತ್ರ'), `${panchanga.nakshatra.displayName || panchanga.nakshatra.name} · ${textFor(lang,'Pada','ಪಾದ')} ${panchanga.nakshatra.pada}`],
-    [textFor(lang,'Yoga','ಯೋಗ'), panchanga.yoga.displayName || panchanga.yoga.name],
-    [textFor(lang,'Karana','ಕರಣ'), panchanga.karana.displayName || panchanga.karana.name],
-    [textFor(lang,'Masa','ಮಾಸ'), panchanga.masa.current.displayName || panchanga.masa.current.name],
-    [textFor(lang,'Samvatsara','ಸಂವತ್ಸರ'), panchanga.samvatsara.displayName || panchanga.samvatsara.name],
-    [textFor(lang,'Sunrise','ಸೂರ್ಯೋದಯ'), panchanga.sunriseLocal],
-    [textFor(lang,'Sunset','ಸೂರ್ಯಾಸ್ತ'), panchanga.sunsetLocal],
-    [textFor(lang,'Rahu Kalam','ರಾಹು ಕಾಲ'), `${panchanga.rahuKalam.startLocal} – ${panchanga.rahuKalam.endLocal}`],
-    [textFor(lang,'Yamaganda','ಯಮಗಂಡ'), `${panchanga.yamaganda.startLocal} – ${panchanga.yamaganda.endLocal}`],
-    [textFor(lang,'Gulika Kalam','ಗುಳಿಕ ಕಾಲ'), `${panchanga.gulikaKalam.startLocal} – ${panchanga.gulikaKalam.endLocal}`],
-    [textFor(lang,'Abhijit Muhurta','ಅಭಿಜಿತ್ ಮುಹೂರ್ತ'), `${panchanga.abhijitMuhurta.startLocal} – ${panchanga.abhijitMuhurta.endLocal}`],
-  ] as [string,string][];
+export function ShareCard({ panchanga, lang }: Props) {
+  const [theme,      setTheme]      = useState<ShareTheme>('saffron');
+  const [aspect,     setAspect]     = useState<ShareAspect>('1:1');
+  const [generating, setGenerating] = useState(false);
 
-  const drawWrapped=(ctx:CanvasRenderingContext2D,txt:string,x:number,y:number,maxWidth:number,lineHeight:number)=>{
-    const words=txt.split(/\s+/); let line=''; let yy=y;
-    for(const word of words){
-      const test=line?`${line} ${word}`:word;
-      if(ctx.measureText(test).width>maxWidth && line){ctx.fillText(line,x,yy);yy+=lineHeight;line=word;}else line=test;
-    }
-    if(line){ctx.fillText(line,x,yy);yy+=lineHeight;}
-    return yy;
-  };
-
-  const downloadJPEG=async()=>{
+  // ── Real JPEG download via Canvas API ────────────────────────────────────
+  const downloadJPEG = async () => {
     setGenerating(true);
-    try{
+    try {
+      const { w, h }   = CANVAS_DIMS[aspect];
+      const canvas      = document.createElement('canvas');
+      canvas.width      = w;
+      canvas.height     = h;
+      const ctx         = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // Wait for fonts to be available (Inter + Noto Sans Kannada)
       await document.fonts.ready;
-      const canvasSize = CANVAS_DIMS[aspect as ShareAspect];
-      const { w, h } = canvasSize;
-      const canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h;
-      const ctx=canvas.getContext('2d'); if(!ctx) return;
-      const palette={
-        saffron:{stops:['#8a2d08','#df6f13','#f3c33b'],text:'#fff',sub:'rgba(255,255,255,.72)'},
-        midnight:{stops:['#0b1020','#28325f','#192041'],text:'#fff6d7',sub:'rgba(255,246,215,.66)'},
-        lotus:{stops:['#f8d7e4','#f5b5cf','#e9a4c2'],text:'#5f153a',sub:'rgba(95,21,58,.68)'},
-        forest:{stops:['#0d3b22','#16623a','#23874e'],text:'#edfdf5',sub:'rgba(237,253,245,.68)'}
-      }[theme as ShareTheme];
-      const grad=ctx.createLinearGradient(0,0,w,h);
-      grad.addColorStop(0,palette.stops[0]); grad.addColorStop(.5,palette.stops[1]); grad.addColorStop(1,palette.stops[2]);
-      ctx.fillStyle=grad; ctx.fillRect(0,0,w,h);
-      const pad=Math.round(w*.07);
-      ctx.save(); ctx.globalAlpha=.08; ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(w*.84,h*.14,w*.26,0,Math.PI*2); ctx.fill(); ctx.restore();
 
-      const face=lang==='kn'?'Noto Sans Kannada, sans-serif':'Inter, system-ui, sans-serif';
-      const small=Math.max(20,Math.round(w*.022));
-      const title=Math.max(38,Math.round(w*.065));
-      ctx.fillStyle=palette.sub; ctx.font=`500 ${small}px ${face}`;
-      ctx.fillText(textFor(lang,'Daily Panchanga','ನಿತ್ಯ ಪಂಚಾಂಗ'),pad,pad+small);
-      ctx.fillStyle=palette.text; ctx.font=`700 ${title}px ${face}`;
-      ctx.fillText('VedRith',pad,pad+small+title*1.25);
-      ctx.strokeStyle='rgba(255,255,255,.35)'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(pad,pad+small+title*1.55); ctx.lineTo(w-pad,pad+small+title*1.55); ctx.stroke();
+      const tc   = THEME_CANVAS[theme];
+      const pad  = Math.round(w * 0.08);
+      const fontFace = lang === 'kn'
+        ? '"Noto Sans Kannada", sans-serif'
+        : 'Inter, system-ui, sans-serif';
 
-      ctx.fillStyle=palette.sub; ctx.font=`400 ${small}px ${face}`;
-      let y=pad+small+title*2.0;
-      y=drawWrapped(ctx, `${panchanga.date} · ${panchanga.location.name || `${panchanga.location.lat.toFixed(2)}°, ${panchanga.location.lng.toFixed(2)}°`}`, pad, y, w-pad*2, small*1.45);
+      // ── Background gradient ──────────────────────────────────────────────
+      const grad = ctx.createLinearGradient(0, 0, w, h);
+      tc.stops.forEach(([pos, color]) => grad.addColorStop(pos, color));
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, w, h);
 
-      const labelSize=Math.max(17,Math.round(w*.018));
-      const valueSize=Math.max(20,Math.round(w*.025));
-      const columns=aspect==='9:16'?1:2;
-      const colW=(w-pad*2)/columns;
-      const rowH=Math.max(66,Math.round(h*.060));
-      let i=0;
-      y+=small;
-      fields.forEach(([label,value])=>{
-        const c=i%columns, r=Math.floor(i/columns), x=pad+c*colW, yy=y+r*rowH;
-        ctx.fillStyle=palette.sub; ctx.font=`400 ${labelSize}px ${face}`; ctx.fillText(label.toUpperCase(),x,yy);
-        ctx.fillStyle=palette.text; ctx.font=`600 ${valueSize}px ${face}`; ctx.fillText(value,x,yy+valueSize*1.45);
-        i++;
+      // ── Subtle top-right decorative circle ───────────────────────────────
+      ctx.save();
+      ctx.globalAlpha = 0.08;
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(w * 0.85, h * 0.12, w * 0.28, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // ── Tagline ──────────────────────────────────────────────────────────
+      const taglineSz = Math.round(w * 0.026);
+      ctx.font        = `400 ${taglineSz}px ${fontFace}`;
+      ctx.fillStyle   = tc.sub;
+      ctx.globalAlpha = 1;
+      ctx.fillText(t('share.tagline', lang), pad, pad + taglineSz);
+
+      // ── App name ─────────────────────────────────────────────────────────
+      const titleSz  = Math.round(w * 0.065);
+      ctx.font       = `700 ${titleSz}px ${fontFace}`;
+      ctx.fillStyle  = tc.text;
+      ctx.fillText('☀ ' + t('hero.title', lang), pad, pad + taglineSz + titleSz * 1.2);
+
+      // ── Separator line ───────────────────────────────────────────────────
+      const sepY = pad + taglineSz + titleSz * 1.2 + titleSz * 0.6;
+      ctx.save();
+      ctx.globalAlpha = 0.3;
+      ctx.strokeStyle = tc.text;
+      ctx.lineWidth   = 2;
+      ctx.beginPath();
+      ctx.moveTo(pad, sepY);
+      ctx.lineTo(w - pad, sepY);
+      ctx.stroke();
+      ctx.restore();
+
+      // ── Panchanga fields ─────────────────────────────────────────────────
+      const fields: [string, string][] = [
+        [t('panchanga.vara',      lang), t(`vara.${panchanga.vara}`,           lang)],
+        [t('panchanga.tithi',     lang), t(`tithi.${panchanga.tithi}`,         lang)],
+        [t('panchanga.nakshatra', lang), t(`nakshatra.${panchanga.nakshatra}`, lang)],
+        [t('panchanga.yoga',      lang), t(`yoga.${panchanga.yoga}`,           lang)],
+      ];
+
+      const fieldStartY  = sepY + h * 0.06;
+      const fieldSpacing = Math.min(h * 0.115, (h * 0.55) / fields.length);
+      const labelSz      = Math.round(w * 0.026);
+      const valueSz      = Math.round(w * 0.042);
+
+      fields.forEach(([label, value], i) => {
+        const baseY = fieldStartY + i * fieldSpacing;
+
+        ctx.font      = `400 ${labelSz}px ${fontFace}`;
+        ctx.fillStyle = tc.sub;
+        ctx.fillText(label.toUpperCase(), pad, baseY);
+
+        ctx.font      = `600 ${valueSz}px ${fontFace}`;
+        ctx.fillStyle = tc.text;
+        ctx.fillText(value, pad, baseY + labelSz * 1.5);
       });
-      y += Math.ceil(fields.length/columns)*rowH + small;
-      ctx.fillStyle=palette.sub; ctx.font=`400 ${labelSize}px ${face}`;
-      y=drawWrapped(ctx,textFor(lang,'Daily highlight:','ಇಂದಿನ ವಿಶೇಷ:')+' '+(panchanga.recommendations?.businessOpening?.reason || panchanga.nakshatra.deity || ''),pad,y,w-pad*2,labelSize*1.5);
 
-      ctx.fillStyle=palette.sub; ctx.font=`400 ${Math.max(16,Math.round(w*.017))}px ${face}`; ctx.globalAlpha=.82;
-      ctx.fillText(DOMAIN,pad,h-pad);
-      const blob=await new Promise<Blob|null>(resolve=>canvas.toBlob(resolve,'image/jpeg',.93));
-      if(!blob) return;
-      const url=URL.createObjectURL(blob); const a=document.createElement('a');
-      a.href=url; a.download=`VedRith-Panchanga-${panchanga.date}.jpg`; document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(()=>URL.revokeObjectURL(url),5000);
-    } finally { setGenerating(false); }
+      // ── Sunrise / Sunset row ─────────────────────────────────────────────
+      const srY      = fieldStartY + fields.length * fieldSpacing + h * 0.02;
+      const srLblSz  = Math.round(w * 0.024);
+      ctx.font       = `400 ${srLblSz}px ${fontFace}`;
+      ctx.fillStyle  = tc.sub;
+      const srLabel  = `${t('panchanga.sunrise', lang)} ${panchanga.sunrise}  ·  ${t('panchanga.sunset', lang)} ${panchanga.sunset}`;
+      ctx.fillText(srLabel, pad, srY);
+
+      // ── Abhijit Muhurta ──────────────────────────────────────────────────
+      const amY  = srY + srLblSz * 1.8;
+      ctx.font   = `400 ${srLblSz}px ${fontFace}`;
+      ctx.fillStyle = tc.sub;
+      const amLabel = `${t('panchanga.abhijit', lang)}  ${panchanga.abhijitMuhurta.start} – ${panchanga.abhijitMuhurta.end}`;
+      ctx.fillText(amLabel, pad, amY);
+
+      // ── Date ─────────────────────────────────────────────────────────────
+      const dateSz  = Math.round(w * 0.028);
+      ctx.font      = `500 ${dateSz}px ${fontFace}`;
+      ctx.fillStyle = tc.text;
+      ctx.globalAlpha = 0.85;
+      ctx.fillText(panchanga.date, pad, h - pad - dateSz * 1.6);
+
+      // ── Production domain watermark ───────────────────────────────────────
+      const domSz   = Math.round(w * 0.022);
+      ctx.font      = `400 ${domSz}px ${fontFace}`;
+      ctx.fillStyle = tc.sub;
+      ctx.globalAlpha = 0.7;
+      ctx.fillText(PRODUCTION_DOMAIN, pad, h - pad);
+
+      // ── Export as JPEG ────────────────────────────────────────────────────
+      const filename = `VedRith-Panchanga-${panchanga.date}.jpg`;
+      canvas.toBlob(
+        blob => {
+          if (!blob) return;
+          const url = URL.createObjectURL(blob);
+          const a   = document.createElement('a');
+          a.href     = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          // Small delay before revoking so mobile Safari can pick it up
+          setTimeout(() => URL.revokeObjectURL(url), 5000);
+        },
+        'image/jpeg',
+        0.93
+      );
+    } finally {
+      setGenerating(false);
+    }
   };
 
-  const pv=PREVIEW[theme as ShareTheme];
-  return <div className="space-y-6">
-    <div><p className="text-xs text-muted-foreground mb-2">{textFor(lang,'Theme','ಥೀಮ್')}</p><div className="flex flex-wrap gap-2">{THEMES.map(th=><button key={th} onClick={()=>setTheme(th)} className={`px-3 py-1 text-xs rounded-full border ${theme===th?'border-primary bg-primary text-primary-foreground':'hover:bg-accent'}`}>{t(`share.${th}`,lang)}</button>)}</div></div>
-    <div><p className="text-xs text-muted-foreground mb-2">{textFor(lang,'Format','ರೂಪ')}</p><div className="flex flex-wrap gap-2">{ASPECTS.map(a=><button key={a} onClick={()=>setAspect(a)} className={`px-3 py-1 text-xs rounded-full border ${aspect===a?'border-primary bg-primary text-primary-foreground':'hover:bg-accent'}`}>{a}</button>)}</div></div>
-    <div className="flex justify-center"><div className={`${PREVIEW_SIZES[aspect as ShareAspect]} ${pv.bg} bg-gradient-to-br rounded-2xl p-6 flex flex-col justify-between shadow-xl overflow-hidden`}>
-      <div><p className={`text-xs ${pv.sub}`}>{textFor(lang,'Daily Panchanga','ನಿತ್ಯ ಪಂಚಾಂಗ')}</p><p className={`text-2xl font-bold mt-1 ${pv.text}`}>☀ VedRith</p><p className={`text-xs mt-1 ${pv.sub}`}>{panchanga.location.name || '—'} · {panchanga.date}</p></div>
-      <div className="grid grid-cols-2 gap-x-4 gap-y-2">{fields.slice(0,10).map(([a,b])=><div key={a} className="text-xs"><p className={pv.sub}>{a}</p><p className={`font-semibold ${pv.text}`}>{b}</p></div>)}</div>
-      <p className={`text-[10px] ${pv.sub}`}>{DOMAIN}</p>
-    </div></div>
-    <div className="flex justify-center"><button onClick={downloadJPEG} disabled={generating} className="btn-gold">{generating?textFor(lang,'Generating image…','ಚಿತ್ರ ರಚಿಸಲಾಗುತ್ತಿದೆ…'):t('share.download',lang)}</button></div>
-    <p className="text-center text-xs text-muted-foreground">{CANVAS_DIMS[aspect as ShareAspect].w} × {CANVAS_DIMS[aspect as ShareAspect].h}px · JPEG</p>
-  </div>;
+  // ── Render ────────────────────────────────────────────────────────────────
+  const preview = THEME_PREVIEW[theme];
+
+  return (
+    <div className="space-y-6">
+
+      {/* Theme selector */}
+      <div>
+        <p className="text-xs text-muted-foreground mb-2">{t('share.theme', lang)}</p>
+        <div className="flex flex-wrap gap-2">
+          {THEMES.map(th => (
+            <button
+              key={th}
+              onClick={() => setTheme(th)}
+              className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+                theme === th
+                  ? 'border-primary bg-primary text-primary-foreground'
+                  : 'hover:bg-accent'
+              }`}
+            >
+              {t(`share.${th}`, lang)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Aspect selector */}
+      <div>
+        <p className="text-xs text-muted-foreground mb-2">{t('share.aspect', lang)}</p>
+        <div className="flex flex-wrap gap-2">
+          {ASPECTS.map(asp => (
+            <button
+              key={asp}
+              onClick={() => setAspect(asp)}
+              className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+                aspect === asp
+                  ? 'border-primary bg-primary text-primary-foreground'
+                  : 'hover:bg-accent'
+              }`}
+            >
+              {asp}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Card preview */}
+      <div className="flex justify-center">
+        <div
+          className={`${ASPECT_PREVIEW[aspect]} bg-gradient-to-br ${preview.bg} rounded-2xl p-5 flex flex-col justify-between shadow-xl overflow-hidden select-none`}
+          role="img"
+          aria-label={t('a11y.chart', lang)}
+        >
+          <div>
+            <p className={`text-xs font-medium ${preview.sub}`}>{t('share.tagline', lang)}</p>
+            <p className={`text-xl font-bold mt-1 ${preview.text}`}>☀ {t('hero.title', lang)}</p>
+          </div>
+
+          <div className="space-y-1.5">
+            {[
+              [t('panchanga.vara', lang),      t(`vara.${panchanga.vara}`, lang)],
+              [t('panchanga.tithi', lang),     t(`tithi.${panchanga.tithi}`, lang)],
+              [t('panchanga.nakshatra', lang),  t(`nakshatra.${panchanga.nakshatra}`, lang)],
+              [t('panchanga.yoga', lang),       t(`yoga.${panchanga.yoga}`, lang)],
+            ].map(([label, value]) => (
+              <div key={label} className="flex justify-between items-center text-xs">
+                <span className={preview.sub}>{label}</span>
+                <span className={`font-semibold ${preview.text}`}>{value}</span>
+              </div>
+            ))}
+          </div>
+
+          <div>
+            <p className={`text-[10px] font-medium ${preview.sub}`}>{panchanga.date}</p>
+            <p className={`text-[10px] ${preview.sub} opacity-60`}>{PRODUCTION_DOMAIN}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Download button — generates real JPEG via Canvas API */}
+      <div className="flex justify-center">
+        <button
+          onClick={downloadJPEG}
+          disabled={generating}
+          className="rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-60 transition-colors"
+        >
+          {generating ? t('share.generating', lang) : t('share.download', lang)}
+        </button>
+      </div>
+
+      {/* Aspect ratio output info */}
+      <p className="text-center text-xs text-muted-foreground">
+        {CANVAS_DIMS[aspect].w} × {CANVAS_DIMS[aspect].h}px · JPEG
+      </p>
+    </div>
+  );
 }

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { verifyAdminToken, extractAdminToken } from '@/src/lib/auth/hmac';
+import { verifyAdminToken, extractBearerToken } from '@/src/lib/auth/hmac';
 import { createServiceClient, isSupabaseConfigured } from '@/src/lib/supabase/server';
 import type { ApiResponse } from '@/src/types';
 
@@ -13,8 +13,8 @@ const schema = z.object({
 });
 
 export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse<{ id: string }>>> {
-  const token = extractAdminToken(req);
-  if (!token || !verifyAdminToken(token)) {
+  const bearer = extractBearerToken(req.headers.get('authorization'));
+  if (!bearer || !verifyAdminToken(bearer)) {
     return NextResponse.json(
       { success: false, error: 'Unauthorized', code: 'UNAUTHORIZED' },
       { status: 401 }

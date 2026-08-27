@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { verifyAdminToken, extractAdminToken } from '@/src/lib/auth/hmac';
+import { verifyAdminToken, extractBearerToken } from '@/src/lib/auth/hmac';
 import { createServiceClient, isSupabaseConfigured } from '@/src/lib/supabase/server';
 import type { ApiResponse } from '@/src/types';
 
@@ -29,9 +29,9 @@ function isAuthorized(req: NextRequest): boolean {
     }
   }
 
-  // Path 2 — HMAC admin session token (HttpOnly cookie preferred; bearer accepted for compatibility)
-  const token = extractAdminToken(req);
-  if (token && verifyAdminToken(token)) return true;
+  // Path 2 — HMAC admin session token
+  const bearer = extractBearerToken(req.headers.get('authorization'));
+  if (bearer && verifyAdminToken(bearer)) return true;
 
   // Missing or invalid secret — never open
   return false;

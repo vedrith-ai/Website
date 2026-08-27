@@ -1,54 +1,117 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { t } from '@/src/i18n/ui';
-import type { Lang } from '@/src/types';
-import type { PanchangaResult } from '@/lib/types/panchanga';
 import { getRegionKey } from '@/src/lib/utils/region';
 import { todayInTimezone } from '@/src/lib/utils/date';
+import type { Lang, PanchangaResponse } from '@/src/types';
 
-interface Props { lang: Lang; timezone?: string; latitude?: number; longitude?: number; detecting?: boolean }
+interface Props {
+  lang:       Lang;
+  timezone?:  string;
+  latitude?:  number;
+  longitude?: number;
+  detecting?: boolean; // from LocationProvider — wait before fetching
+}
 
-export function TodayPanchanga({lang,timezone,latitude,longitude,detecting}:Props){
-  const [data,setData]=useState<PanchangaResult|null>(null);
-  const [loading,setLoading]=useState(true);
-  const [error,setError]=useState('');
-  useEffect(()=>{
-    if(detecting) return;
-    const tz=timezone||'Asia/Kolkata';
-    const region=getRegionKey()==='KARNATAKA'?'KANNADA':'NORTH_INDIAN';
-    const params=new URLSearchParams({
-      date:todayInTimezone(tz),lat:String(latitude??12.9716),lng:String(longitude??77.5946),
-      timezone:tz,region,ayanamsha:'LAHIRI',lang,calendarSystem:'AMANTA'
-    });
-    setLoading(true); setError('');
-    fetch(`/api/v1/panchanga/daily?${params.toString()}`,{cache:'no-store'}).then(r=>r.json()).then(j=>{
-      if(j.success)setData(j.data); else setError(j.error||t('error.api',lang));
-    }).catch(()=>setError(t('error.network',lang))).finally(()=>setLoading(false));
-  },[detecting,timezone,latitude,longitude,lang]);
+export function TodayPanchanga({ lang, timezone, latitude, longitude, detecting }: Props) {
+  const [panchanga, setPanchanga] = useState<PanchangaResponse | null>(null);
+  const [loading,   setLoading]   = useState(true);
+  const [error,     setError]     = useState<string | null>(null);
 
-  if(loading||detecting) return <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">{[1,2,3,4,5,6].map(i=><div key={i} className="h-20 rounded border bg-white/[0.05] animate-pulse"/>)}</div>;
-  if(error) return <div className="p-4 rounded border border-red-300/20 text-red-200">{error}</div>;
-  if(!data) return null;
+  useEffect(() => {
+    // Wait until location is resolved (avoids double-fetch with wrong coords)
+    if (detecting) return;
 
-  const cards=[
-    [t('panchanga.vara',lang),data.vara.displayName||data.vara.name],
-    [t('panchanga.tithi',lang),data.tithi.displayName||data.tithi.name],
-    [t('panchanga.nakshatra',lang),`${data.nakshatra.displayName||data.nakshatra.name} (${data.nakshatra.number})`],
-    [t('panchanga.yoga',lang),data.yoga.displayName||data.yoga.name],
-    [t('panchanga.karana',lang),data.karana.displayName||data.karana.name],
-    [t('panchanga.sunrise',lang),data.sunriseLocal],
-    [t('panchanga.sunset',lang),data.sunsetLocal],
-    [t('panchanga.abhijit',lang),`${data.abhijitMuhurta.startLocal} – ${data.abhijitMuhurta.endLocal}`],
-    [t('panchanga.rahukalam',lang),`${data.rahuKalam.startLocal} – ${data.rahuKalam.endLocal}`],
-  ];
-  return <div className="space-y-4">
-    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-      {cards.map(([label,value])=><div key={label} className="rounded border border-white/[0.07] bg-navy-800/50 p-3"><p className="text-[0.6rem] tracking-[0.13em] uppercase text-gold-500/70">{label}</p><p className="font-serif text-base text-cream-100 mt-1">{value}</p></div>)}
+    const tz  = timezone  ?? 'Asia/Kolkata';
+    const lat = latitude  ?? 12.9716;
+    const lon = longitude ?? 77.5946;
+
+    const date   = todayInTimezone(tz);
+    const region = getRegionKey();
+
+    setLoading(true);
+    setError(null);
+
+    fetch('/api/v1/panchanga', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ date, latitude: lat, longitude: lon, timezone: tz, region }),
+    })
+      .then(r => r.json())
+      .then(json => {
+        if (json.success) setPanchanga(json.data);
+        else setError(json.error ?? t('error.api', lang));
+      })
+      .catch(() => setError(t('error.network', lang)))
+      .finally(() => setLoading(false));
+  }, [lang, timezone, latitude, longitude, detecting]);
+
+  if (detecting || loading) return <PanchangaSkeleton />;
+  if (error)   return <div className="text-destructive p-4 rounded-lg border border-destructive/20">{error}</div>;
+  if (!panchanga) return null;
+
+  return (
+    <section aria-label={t('panchanga.title', lang)} className="space-y-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <PanchangaCard label={t('panchanga.vara', lang)}      value={t(`vara.${panchanga.vara}`, lang)} />
+        <PanchangaCard label={t('panchanga.tithi', lang)}     value={t(`tithi.${panchanga.tithi}`, lang)} sub={t(`common.${panchanga.tithiPaksha}paksha`, lang)} />
+        <PanchangaCard label={t('panchanga.nakshatra', lang)} value={t(`nakshatra.${panchanga.nakshatra}`, lang)} sub={`${t('panchanga.pada', lang)} ${panchanga.nakshatraPada}`} />
+        <PanchangaCard label={t('panchanga.yoga', lang)}      value={t(`yoga.${panchanga.yoga}`, lang)} highlight={panchanga.auspiciousYoga} />
+        <PanchangaCard label={t('panchanga.karana', lang)}    value={t(`karana.${panchanga.karana}`, lang)} />
+        <PanchangaCard label={t('panchanga.sunrise', lang)}   value={panchanga.sunrise} sub={`${t('panchanga.sunset', lang)}: ${panchanga.sunset}`} />
+      </div>
+
+      <div className="rounded-lg border bg-card p-4 space-y-2">
+        <div className="flex justify-between text-sm">
+          <span className="text-muted-foreground">{t('panchanga.abhijit', lang)}</span>
+          <span className="font-medium">{panchanga.abhijitMuhurta.start} – {panchanga.abhijitMuhurta.end}</span>
+        </div>
+        <div className="flex justify-between text-sm">
+          <span className="text-muted-foreground">{t('panchanga.rahukalam', lang)}</span>
+          <span className="font-medium text-destructive/80">{panchanga.rahukalam.start} – {panchanga.rahukalam.end}</span>
+        </div>
+        <div className="flex justify-between text-sm">
+          <span className="text-muted-foreground">{t('panchanga.yamagandam', lang)}</span>
+          <span className="font-medium text-destructive/60">{panchanga.yamagandam.start} – {panchanga.yamagandam.end}</span>
+        </div>
+      </div>
+
+      {panchanga.festivals.length > 0 && (
+        <div className="rounded-lg border border-primary/30 bg-primary/5 p-3">
+          <p className="text-xs text-primary font-medium mb-1">{t('panchanga.festivals', lang)}</p>
+          <p className="text-sm">{panchanga.festivals.join(', ')}</p>
+        </div>
+      )}
+
+      <div className="rounded-lg bg-muted/50 p-3">
+        <p className="text-xs text-muted-foreground mb-1">
+          {t('panchanga.deity', lang)}: <strong>{panchanga.deityOfDay}</strong>
+        </p>
+        <p className="text-sm italic">{panchanga.spiritualMessage}</p>
+      </div>
+    </section>
+  );
+}
+
+function PanchangaCard({
+  label, value, sub, highlight,
+}: { label: string; value: string; sub?: string; highlight?: boolean }) {
+  return (
+    <div className={`rounded-lg border p-3 ${highlight ? 'border-primary/50 bg-primary/5' : 'bg-card'}`}>
+      <p className="text-xs text-muted-foreground mb-1">{label}</p>
+      <p className="font-semibold text-sm leading-tight">{value}</p>
+      {sub && <p className="text-xs text-muted-foreground mt-0.5">{sub}</p>}
     </div>
-    <div className="grid sm:grid-cols-2 gap-3">
-      <div className="rounded border border-gold-500/20 bg-white/[0.03] p-4"><p className="text-[0.6rem] tracking-[0.13em] uppercase text-gold-500/70">{lang==='kn'?'ಮಾಸ':'Masa'}</p><p className="font-serif text-xl text-cream-100 mt-1">{data.masa.current.displayName||data.masa.current.name}</p><p className="text-xs text-cream-100/50 mt-1">{data.samvatsara.displayName||data.samvatsara.name}</p></div>
-      <div className="rounded border border-gold-500/20 bg-white/[0.03] p-4"><p className="text-[0.6rem] tracking-[0.13em] uppercase text-gold-500/70">{t('panchanga.deity',lang)}</p><p className="font-serif text-xl text-cream-100 mt-1">{data.nakshatra.deity}</p><p className="text-xs text-cream-100/50 mt-1">{lang==='kn'?'ನಕ್ಷತ್ರ ಅಧಿದೇವತೆ':'Nakshatra deity'}</p></div>
+  );
+}
+
+function PanchangaSkeleton() {
+  return (
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div key={i} className="rounded-lg border bg-card p-3 h-16 skeleton" />
+      ))}
     </div>
-  </div>;
+  );
 }

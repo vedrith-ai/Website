@@ -8,18 +8,16 @@ const STATIC_ASSETS = [
   '/',
   '/panchanga',
   '/kundali',
+  '/muhurta',
   '/manifest.json',
+  '/globals.css',
 ];
 
 // ── Install ──────────────────────────────────────────────────────────────────
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(async cache => {
-      await Promise.all(STATIC_ASSETS.map(async asset => {
-        try { await cache.add(asset); } catch {}
-      }));
-    })
+    caches.open(CACHE_NAME).then(cache => cache.addAll(STATIC_ASSETS))
   );
   self.skipWaiting();
 });
