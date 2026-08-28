@@ -42,6 +42,7 @@ function helioEcl(el:OrbitalElements,T:number):{x:number;y:number;z:number;distA
 }
 
 function earthHel(T:number):{x:number;y:number;z:number} {
+  const d=T*36525
   const L=normalize360(280.46646+36000.76983*T+0.0003032*T*T)+180
   const M=toRad(normalize360(357.52911+35999.05029*T-0.0001537*T*T))
   const C=(1.914602-0.004817*T-0.000014*T*T)*Math.sin(M)+(0.019993-0.000101*T)*Math.sin(2*M)+0.000289*Math.sin(3*M)

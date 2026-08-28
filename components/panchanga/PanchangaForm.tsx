@@ -92,7 +92,7 @@ export default function PanchangaForm({ onSubmit, loading }: Props) {
   const [locationQuery, setLocationQuery] = useState('')
   const { lang: globalLang } = useLang()
   const { setLocation } = useLocation()
-  const tr=useCallback((en:string,kn:string)=>globalLang==='kn'?kn:en,[globalLang])
+  const tr=(en:string,kn:string)=>globalLang==='kn'?kn:en
 
   useEffect(() => { setLang(globalLang as LangCode) }, [globalLang])
 
@@ -127,7 +127,7 @@ export default function PanchangaForm({ onSubmit, loading }: Props) {
     } finally {
       setSearching(false)
     }
-  }, [locationQuery, tr])
+  }, [locationQuery])
 
   // ── Use device location ────────────────────────────────────────────────────
   const useMyLocation = useCallback(() => {
@@ -156,7 +156,7 @@ export default function PanchangaForm({ onSubmit, loading }: Props) {
         setSearching(false)
       }
     )
-  }, [setLocation, tr])
+  }, [])
 
   // ── Preset city select ─────────────────────────────────────────────────────
   const applyPreset = useCallback((preset: typeof PRESET_CITIES[number]) => {
@@ -190,7 +190,7 @@ export default function PanchangaForm({ onSubmit, loading }: Props) {
       date, lat: latN, lng: lngN, timezone, locationName: locName, region, ayanamsha,
       lang, calendarSystem,   // [V1.1]
     })
-  }, [date, lat, lng, timezone, locName, region, ayanamsha, lang, calendarSystem, onSubmit, setLocation, tr])
+  }, [date, lat, lng, timezone, locName, region, ayanamsha, lang, calendarSystem, onSubmit])
 
   const inputCls = `
     w-full bg-navy-900/60 border border-white/10 text-cream-100
@@ -400,7 +400,7 @@ export default function PanchangaForm({ onSubmit, loading }: Props) {
               </svg>
               {tr('Computing Panchanga…','ಪಂಚಾಂಗ ಲೆಕ್ಕ ಹಾಕಲಾಗುತ್ತಿದೆ…')}
             </span>
-          : tr('Calculate Panchanga','ಪಂಚಾಂಗ ಲೆಕ್ಕ ಹಾಕಿ')
+          : 'Calculate Panchanga'
         }
       </button>
     </form>

@@ -1,5 +1,5 @@
 import { normalize360 } from '../ephemeris/julian-day'
-import { tropicalToSidereal } from '../ephemeris/ayanamsha'
+import { tropicalToSidereal, computeAyanamsha } from '../ephemeris/ayanamsha'
 import type { AyanamshaKey, RashiIndex, PlanetaryPosition, PlanetId } from '../../types/kundali'
 import type { RawPlanetPosition } from '../ephemeris/planets'
 

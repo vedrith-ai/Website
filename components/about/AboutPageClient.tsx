@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { useLang } from '@/components/providers/LangProvider';
@@ -59,13 +58,10 @@ function ImageBlock() {
         className="mandala-ring"
         style={{ width: 320, height: 320, opacity: 0.15 }}
       />
-      <Image
+      <img
         src="/images/logo-full.png"
         alt="VedRith"
-        width={512}
-        height={160}
         className="relative z-10 w-64 h-auto"
-        priority
       />
     </div>
   );

@@ -56,7 +56,8 @@ export function computeSunTimes(
   const jdNoon = gregorianToJD(year, month, day, 12.0)
 
   // Initial solar position at noon
-  const { equationOfTime, declination } = computeSolarPosition(jdNoon)
+  const { tropicalLongitude, equationOfTime, declination } =
+    computeSolarPosition(jdNoon)
 
   const latRad  = toRad(lat)
   const decRad  = toRad(declination)
@@ -199,6 +200,8 @@ function eclipticToEquatorial(
 export function utHourToDate(
   year: number, month: number, day: number, utHour: number
 ): Date {
+  const h  = Math.trunc(utHour)
+  const m  = Math.round((utHour - h) * 60)
   // Handle negative or > 24 hour overflow
   const ms = Date.UTC(year, month - 1, day) + utHour * 3_600_000
   return new Date(ms)

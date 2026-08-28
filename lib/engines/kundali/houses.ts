@@ -1,4 +1,5 @@
 import { normalize360, toRad, toDeg } from '../ephemeris/julian-day'
+import { computeObliquity } from '../ephemeris/coordinates'
 import { computeAscendantAndMC } from './ascendant'
 import { tropicalToPlacement, RASHI_SPAN_DEG } from './zodiac'
 import type { HouseCusps, HouseSystem, AyanamshaKey, RashiIndex } from '../../types/kundali'

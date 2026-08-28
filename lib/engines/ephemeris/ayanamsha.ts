@@ -4,7 +4,7 @@
 // Reference: IAU/Lahiri standard, KP ayanamsha, Raman ayanamsha
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { julianCenturies, normalize360 } from './julian-day'
+import { julianCenturies, J2000, normalize360 } from './julian-day'
 import type { AyanamshaKey } from '../../types/panchanga'
 
 // ── Ayanamsha at J2000.0 (degrees) ───────────────────────────────────────────

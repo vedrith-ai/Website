@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { computePanchanga } from '@/lib/engines/panchanga';
 import { parsePanchangaQuery } from '@/lib/validators/panchanga-query';
+import type { ApiResponse, PanchangaResult } from '@/lib/types/panchanga';
 
 export const runtime='nodejs';
 export const maxDuration=30;
@@ -21,13 +22,13 @@ const BodySchema=z.object({
   calendarSystem:z.enum(['AMANTA','PURNIMANTA']).default('AMANTA'),
 });
 
-function mapInput(raw: Record<string, unknown>) {
+function mapInput(raw:any){
   const region=regionMap[raw.region] ?? raw.region ?? 'KANNADA';
   return {date:raw.date,lat:Number(raw.latitude??raw.lat),lng:Number(raw.longitude??raw.lng),timezone:raw.timezone,
     locationName:raw.locationName||'',region,ayanamsha:raw.ayanamsha||'LAHIRI',lang:raw.lang||'en',calendarSystem:raw.calendarSystem||'AMANTA'};
 }
 
-async function compute(raw: Record<string, unknown>) {
+async function compute(raw:any){
   const mappedSource = mapInput(raw)
   const mapped: Record<string, string | undefined> = {
     date: String(mappedSource.date ?? ''),

@@ -41,36 +41,23 @@ export default function PanchangaPage() {
     finally{setLoading(false);}
   },[lang]);
 
-  // Automatically calculate today's Panchanga from the remembered device/network location.
-  useEffect(() => {
-    if (detecting || result) return;
-
-    const autoValues: PanchangaFormValues = {
-      date: todayInTimezone(location.timezone),
-      lat: location.latitude,
-      lng: location.longitude,
-      timezone: location.timezone,
-      locationName:
-        location.city ||
-        `${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}`,
-      region:
-        getRegionKey() === 'KARNATAKA' ? 'KANNADA' : 'NORTH_INDIAN',
-      ayanamsha: 'LAHIRI',
-      lang,
-      calendarSystem: 'AMANTA',
-    };
-
-    void handleSubmit(autoValues);
-  }, [
-    detecting,
-    result,
-    location.latitude,
-    location.longitude,
-    location.timezone,
-    location.city,
+  // Pre-fill the form automatically from the device/network location and active language.
+  const autoValues:PanchangaFormValues={
+    date: detecting ? '' : todayInTimezone(location.timezone),
+    lat: location.latitude,
+    lng: location.longitude,
+    timezone: location.timezone,
+    locationName: location.city || `${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}`,
+    region: getRegionKey() === 'KARNATAKA' ? 'KANNADA' : 'NORTH_INDIAN',
+    ayanamsha:'LAHIRI',
     lang,
-    handleSubmit,
-  ]); // automatic current-day result on page load
+    calendarSystem: 'AMANTA',
+  };
+
+  useEffect(()=>{
+    if(detecting || result) return;
+    void handleSubmit(autoValues);
+  },[detecting, location.latitude, location.longitude, location.timezone, lang]); // automatic current-day result on page load
 
   return <>
     <Header lang={lang} onLangChange={setLang}/>

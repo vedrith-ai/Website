@@ -60,8 +60,7 @@ export function ShareCard({panchanga,lang}:Props){
     setGenerating(true);
     try{
       await document.fonts.ready;
-      const canvasSize = CANVAS_DIMS[aspect as ShareAspect];
-      const { w, h } = canvasSize;
+      const {w,h}=CANVAS_DIMS[aspect];
       const canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h;
       const ctx=canvas.getContext('2d'); if(!ctx) return;
       const palette={
@@ -69,7 +68,7 @@ export function ShareCard({panchanga,lang}:Props){
         midnight:{stops:['#0b1020','#28325f','#192041'],text:'#fff6d7',sub:'rgba(255,246,215,.66)'},
         lotus:{stops:['#f8d7e4','#f5b5cf','#e9a4c2'],text:'#5f153a',sub:'rgba(95,21,58,.68)'},
         forest:{stops:['#0d3b22','#16623a','#23874e'],text:'#edfdf5',sub:'rgba(237,253,245,.68)'}
-      }[theme as ShareTheme];
+      }[theme];
       const grad=ctx.createLinearGradient(0,0,w,h);
       grad.addColorStop(0,palette.stops[0]); grad.addColorStop(.5,palette.stops[1]); grad.addColorStop(1,palette.stops[2]);
       ctx.fillStyle=grad; ctx.fillRect(0,0,w,h);
@@ -116,16 +115,16 @@ export function ShareCard({panchanga,lang}:Props){
     } finally { setGenerating(false); }
   };
 
-  const pv=PREVIEW[theme as ShareTheme];
+  const pv=PREVIEW[theme];
   return <div className="space-y-6">
     <div><p className="text-xs text-muted-foreground mb-2">{textFor(lang,'Theme','ಥೀಮ್')}</p><div className="flex flex-wrap gap-2">{THEMES.map(th=><button key={th} onClick={()=>setTheme(th)} className={`px-3 py-1 text-xs rounded-full border ${theme===th?'border-primary bg-primary text-primary-foreground':'hover:bg-accent'}`}>{t(`share.${th}`,lang)}</button>)}</div></div>
     <div><p className="text-xs text-muted-foreground mb-2">{textFor(lang,'Format','ರೂಪ')}</p><div className="flex flex-wrap gap-2">{ASPECTS.map(a=><button key={a} onClick={()=>setAspect(a)} className={`px-3 py-1 text-xs rounded-full border ${aspect===a?'border-primary bg-primary text-primary-foreground':'hover:bg-accent'}`}>{a}</button>)}</div></div>
-    <div className="flex justify-center"><div className={`${PREVIEW_SIZES[aspect as ShareAspect]} ${pv.bg} bg-gradient-to-br rounded-2xl p-6 flex flex-col justify-between shadow-xl overflow-hidden`}>
+    <div className="flex justify-center"><div className={`${PREVIEW_SIZES[aspect]} ${pv.bg} bg-gradient-to-br rounded-2xl p-6 flex flex-col justify-between shadow-xl overflow-hidden`}>
       <div><p className={`text-xs ${pv.sub}`}>{textFor(lang,'Daily Panchanga','ನಿತ್ಯ ಪಂಚಾಂಗ')}</p><p className={`text-2xl font-bold mt-1 ${pv.text}`}>☀ VedRith</p><p className={`text-xs mt-1 ${pv.sub}`}>{panchanga.location.name || '—'} · {panchanga.date}</p></div>
       <div className="grid grid-cols-2 gap-x-4 gap-y-2">{fields.slice(0,10).map(([a,b])=><div key={a} className="text-xs"><p className={pv.sub}>{a}</p><p className={`font-semibold ${pv.text}`}>{b}</p></div>)}</div>
       <p className={`text-[10px] ${pv.sub}`}>{DOMAIN}</p>
     </div></div>
     <div className="flex justify-center"><button onClick={downloadJPEG} disabled={generating} className="btn-gold">{generating?textFor(lang,'Generating image…','ಚಿತ್ರ ರಚಿಸಲಾಗುತ್ತಿದೆ…'):t('share.download',lang)}</button></div>
-    <p className="text-center text-xs text-muted-foreground">{CANVAS_DIMS[aspect as ShareAspect].w} × {CANVAS_DIMS[aspect as ShareAspect].h}px · JPEG</p>
+    <p className="text-center text-xs text-muted-foreground">{CANVAS_DIMS[aspect].w} × {CANVAS_DIMS[aspect].h}px · JPEG</p>
   </div>;
 }

@@ -36,7 +36,7 @@ export default function KundaliBirthForm({ onSubmit, loading }: Props) {
   const [placeError,  setPlaceError]  = useState('')
   const [formError,   setFormError]   = useState('')
   const { lang } = useLang()
-  const tr = useCallback((en:string, kn:string) => lang === 'kn' ? kn : en, [lang])
+  const tr = (en:string, kn:string) => lang === 'kn' ? kn : en
 
   const handlePlaceSearch = useCallback(async () => {
     if (!placeQuery.trim()) return
@@ -62,7 +62,7 @@ export default function KundaliBirthForm({ onSubmit, loading }: Props) {
     if (isNaN(latN) || isNaN(lngN)) { setFormError(tr('Please search for a birth place or enter coordinates.','ದಯವಿಟ್ಟು ಜನ್ಮ ಸ್ಥಳ ಹುಡುಕಿ ಅಥವಾ ಅಕ್ಷಾಂಶ/ರೇಖಾಂಶ ನಮೂದಿಸಿ.')); return }
     if (!placeName.trim()) { setFormError(tr('Please enter the birth place name.','ದಯವಿಟ್ಟು ಜನ್ಮ ಸ್ಥಳದ ಹೆಸರು ನಮೂದಿಸಿ.')); return }
     onSubmit({ name: name.trim(), gender, dateOfBirth, timeOfBirth, timezone: timezone.trim(), latitude: latN, longitude: lngN, placeName: placeName.trim(), ayanamsha, houseSystem })
-  }, [name, gender, dateOfBirth, timeOfBirth, timezone, lat, lng, placeName, ayanamsha, houseSystem, onSubmit, tr])
+  }, [name, gender, dateOfBirth, timeOfBirth, timezone, lat, lng, placeName, ayanamsha, houseSystem, onSubmit])
 
   const inp = `w-full bg-navy-900/60 border border-white/10 text-cream-100 px-4 py-3 text-sm font-sans focus:outline-none focus:border-gold-500/60 transition-colors placeholder:text-cream-100/30`
   const lbl = 'block font-sans text-[0.65rem] tracking-[0.22em] uppercase text-gold-500/80 mb-1.5'
